@@ -12,6 +12,7 @@ from .resnet import *
 from .densenet import *
 from .xception import *
 from .osnet_ain import *
+from .osnet_mil import *
 from .resnetmid import *
 from .shufflenet import *
 from .squeezenet import *
@@ -74,7 +75,8 @@ __model_factory = {
     'osnet_ain_x1_0': osnet_ain_x1_0,
     'osnet_ain_x0_75': osnet_ain_x0_75,
     'osnet_ain_x0_5': osnet_ain_x0_5,
-    'osnet_ain_x0_25': osnet_ain_x0_25
+    'osnet_ain_x0_25': osnet_ain_x0_25,
+    'osnet_x1_0_mil': osnet_x1_0_mil,
 }
 
 
@@ -89,7 +91,7 @@ def show_avai_models():
 
 
 def build_model(
-    name, num_classes, loss='softmax', pretrained=True, use_gpu=True
+    name, num_classes, loss='softmax', pretrained=True, use_gpu=True, batch_size=1, bag_size=1
 ):
     """A function wrapper for building a model.
 
@@ -118,5 +120,7 @@ def build_model(
         num_classes=num_classes,
         loss=loss,
         pretrained=pretrained,
-        use_gpu=use_gpu
+        use_gpu=use_gpu,
+        batch_size=batch_size,
+        bag_size=bag_size
     )

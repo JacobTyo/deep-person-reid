@@ -11,5 +11,6 @@ from .msmt17 import MSMT17
 from .cuhksysu import CUHKSYSU
 from .sensereid import SenseReID
 from .market1501 import Market1501
+from .market1501mil import Market1501Mil
 from .dukemtmcreid import DukeMTMCreID
 from .university1652 import University1652

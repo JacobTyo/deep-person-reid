@@ -59,10 +59,11 @@ def get_default_config():
     cfg.train.max_epoch = 60
     cfg.train.start_epoch = 0
     cfg.train.batch_size = 32
+    cfg.train.bag_size = 100 # how many instances per bag
     cfg.train.fixbase_epoch = 0 # number of epochs to fix base layers
     cfg.train.open_layers = [
         'classifier'
-    ] # layers for training while keeping others frozen
+    ]  # layers for training while keeping others frozen
     cfg.train.staged_lr = False # set different lr to different layers
     cfg.train.new_layers = ['classifier'] # newly added layers with default lr
     cfg.train.base_lr_mult = 0.1 # learning rate multiplier for base layers
@@ -92,6 +93,7 @@ def get_default_config():
     cfg.loss.triplet.margin = 0.3 # distance margin
     cfg.loss.triplet.weight_t = 1. # weight to balance hard triplet loss
     cfg.loss.triplet.weight_x = 0. # weight to balance cross entropy loss
+    cfg.loss.triplet.weight_d = 0.5  # weight to balance bag and instance difference
 
     # test
     cfg.test = CN()
@@ -126,6 +128,7 @@ def imagedata_kwargs(cfg):
         'load_train_targets': cfg.data.load_train_targets,
         'batch_size_train': cfg.train.batch_size,
         'batch_size_test': cfg.test.batch_size,
+        'bag_size': cfg.train.bag_size,
         'workers': cfg.data.workers,
         'num_instances': cfg.sampler.num_instances,
         'num_cams': cfg.sampler.num_cams,

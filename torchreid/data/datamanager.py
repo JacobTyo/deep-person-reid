@@ -175,7 +175,8 @@ class ImageDataManager(DataManager):
         train_sampler_t='RandomSampler',
         cuhk03_labeled=False,
         cuhk03_classic_split=False,
-        market1501_500k=False
+        market1501_500k=False,
+        bag_size=None
     ):
 
         super(ImageDataManager, self).__init__(
@@ -209,6 +210,9 @@ class ImageDataManager(DataManager):
 
         self._num_train_pids = trainset.num_train_pids
         self._num_train_cams = trainset.num_train_cams
+
+        batch_size_train = batch_size_train * bag_size if bag_size else batch_size_train
+        num_instances = bag_size if bag_size else num_instances
 
         self.train_loader = torch.utils.data.DataLoader(
             trainset,
