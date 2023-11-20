@@ -53,6 +53,7 @@ def get_default_config():
 
     # train
     cfg.train = CN()
+    cfg.train.project = 'default_wandb'  # wandb project name
     cfg.train.optim = 'adam'
     cfg.train.lr = 0.0003
     cfg.train.weight_decay = 5e-4
@@ -190,7 +191,8 @@ def lr_scheduler_kwargs(cfg):
         'lr_scheduler': cfg.train.lr_scheduler,
         'stepsize': cfg.train.stepsize,
         'gamma': cfg.train.gamma,
-        'max_epoch': cfg.train.max_epoch
+        'max_epoch': cfg.train.max_epoch,
+        'max_lr': cfg.train.lr
     }
 
 
@@ -211,5 +213,5 @@ def engine_run_kwargs(cfg):
         'visrank_topk': cfg.test.visrank_topk,
         'use_metric_cuhk03': cfg.cuhk03.use_metric_cuhk03,
         'ranks': cfg.test.ranks,
-        'rerank': cfg.test.rerank
+        'rerank': cfg.test.rerank,
     }

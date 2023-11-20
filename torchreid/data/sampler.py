@@ -7,7 +7,7 @@ from torch.utils.data.sampler import Sampler, RandomSampler, SequentialSampler
 
 AVAI_SAMPLERS = [
     'RandomIdentitySampler', 'SequentialSampler', 'RandomSampler',
-    'RandomDomainSampler', 'RandomDatasetSampler'
+    'RandomDomainSampler', 'RandomDatasetSampler', 'RandomBagSampler'
 ]
 
 
@@ -202,6 +202,105 @@ class RandomDatasetSampler(Sampler):
         return self.length
 
 
+class RandomBagSampler(Sampler):
+    """
+    Randomly samples bags of data, ensuring each bag has multiple instances of each PID.
+
+    Args:
+        data_source (list): contains tuples of (img_path(s), pid, camid, dsetid).
+        batch_size (int): number of bags to sample.
+        num_instances (int): number of instances per PID in each bag.
+    """
+
+    def __init__(self, data_source, batch_size, num_instances):
+        if batch_size < num_instances:
+            raise ValueError(
+                'batch_size={} must be no less '
+                'than num_instances={}'.format(batch_size, num_instances)
+            )
+
+        self.data_source = data_source
+        self.batch_size = batch_size
+        self.num_instances = num_instances
+        self.num_bags_per_batch = self.batch_size // self.num_instances
+        self.index_dic = defaultdict(list)
+        for index, items in enumerate(data_source):
+            pid = items[1]
+            self.index_dic[pid].append(index)
+        self.pids = list(self.index_dic.keys())
+
+        # estimate number of examples in an epoch
+        # TODO: improve precision
+        self.length = 0
+        for pid in self.pids:
+            idxs = self.index_dic[pid]
+            num = len(idxs)
+            if num < self.num_instances:
+                num = self.num_instances
+            self.length += num - num % self.num_instances
+
+    def __iter__(self):
+        batch_idxs_dict = defaultdict(list)
+
+        for pid in self.pids:
+            idxs = copy.deepcopy(self.index_dic[pid])
+            if len(idxs) < self.num_instances:
+                idxs = np.random.choice(
+                    idxs, size=self.num_instances, replace=True
+                )
+            random.shuffle(idxs)
+            batch_idxs = []
+            for idx in idxs:
+                batch_idxs.append(idx)
+                if len(batch_idxs) == self.num_instances:
+                    # transform the batch_idxs into a list of lists, where the inner list is the bag
+                    bagged_batch_idxs = [batch_idxs[i:i+self.num_instances] for i in range(0, len(batch_idxs), self.num_instances)]
+                    # and then make sure the batch_idxs are the right length to make a complete bag by adding random instances to the end
+                    while len(bagged_batch_idxs[-1]) < self.num_instances:
+                        bagged_batch_idxs[-1].append(random.choice(batch_idxs))
+                    batch_idxs_dict[pid].append(batch_idxs)
+                    batch_idxs = []
+
+        avai_pids = copy.deepcopy(self.pids)
+        final_idxs = []
+
+        # what is the best way to handle generating multiple bags for a anchor positive match?
+        # Easy way - sample two of every bag
+        # Hard way - for each bag, sample a random number of times >= 2
+
+        while len(avai_pids) >= self.num_bags_per_batch:
+            # now build the batches that will be served, based on the precomputed bags
+            for build_batch_idx in range(1, self.num_bags_per_batch+1):
+                bags_left_to_sample_this_batch = self.num_bags_per_batch - build_batch_idx
+                if bags_left_to_sample_this_batch >= 3:
+                    num_bags_to_sample = random.sample(range(2, 4), 1)[0]
+                else:
+                    num_bags_to_sample = 1
+
+                selected_pid = random.sample(avai_pids, 1)[0]
+                # TODO: this is sloppy, figure out why we hit this infty loop and fix
+                num_tries = 0
+                while len(batch_idxs_dict[selected_pid]) < num_bags_to_sample and num_tries < 10:
+                    selected_pid = random.sample(avai_pids, 1)[0]
+                    num_tries += 1
+
+                if num_tries == 10:
+                    # just sample a single point
+                    num_bags_to_sample = 1
+
+                for _ in range(num_bags_to_sample):
+                    batch_idxs = batch_idxs_dict[selected_pid].pop(0)
+                    final_idxs.extend(batch_idxs)
+                    if len(batch_idxs_dict[selected_pid]) == 0:
+                        avai_pids.remove(selected_pid)
+
+        return iter(final_idxs)
+
+    def __len__(self):
+        return self.length
+
+
+
 def build_train_sampler(
     data_source,
     train_sampler,
@@ -241,5 +340,8 @@ def build_train_sampler(
 
     elif train_sampler == 'RandomSampler':
         sampler = RandomSampler(data_source)
+
+    elif train_sampler == 'RandomBagSampler':
+        sampler = RandomBagSampler(data_source, batch_size, num_instances)
 
     return sampler

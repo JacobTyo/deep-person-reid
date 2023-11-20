@@ -57,14 +57,15 @@ class Market1501Mil(ImageDataset):
         self.check_before_run(required_files)
 
         train = self.process_dir(self.train_dir, relabel=True, add_mil_noise=True)
-        query = self.process_dir(self.query_dir, relabel=False)
-        gallery = self.process_dir(self.gallery_dir, relabel=False)
+        # train = self.process_dir(self.train_dir, relabel=True, add_mil_noise=False)
+        query = self.process_dir(self.query_dir, relabel=False, add_mil_noise=False)
+        gallery = self.process_dir(self.gallery_dir, relabel=False, add_mil_noise=False)
         if self.market1501_500k:
             gallery += self.process_dir(self.extra_gallery_dir, relabel=False)
 
         super(Market1501Mil, self).__init__(train, query, gallery, **kwargs)
 
-    def process_dir(self, dir_path, relabel=False, add_mil_noise=True):
+    def process_dir(self, dir_path, relabel=False, add_mil_noise=False):
         img_paths = glob.glob(osp.join(dir_path, '*.jpg'))
         pattern = re.compile(r'([-\d]+)_c(\d)')
 

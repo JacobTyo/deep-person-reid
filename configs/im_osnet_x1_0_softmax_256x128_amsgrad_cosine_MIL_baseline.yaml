@@ -1,5 +1,5 @@
 model:
-  name: 'osnet_x1_0_mil'
+  name: 'osnet_x1_0'
   pretrained: True
 
 data:
@@ -10,10 +10,7 @@ data:
   width: 128
   combineall: False
   transforms: ['random_flip']
-  save_dir: 'log/osnet_x1_0_market1501_softmax_cosinelr_mil_fixedsamp_4'
-
-sampler:
-  train_sampler: 'RandomBagSampler'
+  save_dir: 'log/osnet_x1_0_market1501_softmax_cosinelr_mil_baseline_1'
 
 loss:
   name: 'triplet'
@@ -21,17 +18,17 @@ loss:
     weight_t: 1.0
     weight_x: 1.0
     weight_d: 0.0
-    margin: 1.0
+    margin: 0.5
 
 train:
   optim: 'amsgrad'
-  lr: 0.0005
-  max_epoch: 250
-  batch_size: 10
-  fixbase_epoch: 5
-  open_layers: ['classifier', 'bag_classifier', 'attention', 'fc']
-  lr_scheduler: 'one_cycle'
-  bag_size: 10
+  lr: 0.0003
+  max_epoch: 100
+  batch_size: 100
+  fixbase_epoch: 10
+  open_layers: ['classifier', 'fc']
+  lr_scheduler: 'cosine'
+  bag_size: 0
 
 test:
   batch_size: 300

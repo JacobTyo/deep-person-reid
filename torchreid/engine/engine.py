@@ -14,6 +14,7 @@ from torchreid.utils import (
     open_specified_layers, visualize_ranked_results
 )
 from torchreid.losses import DeepSupervision
+from torchreid.utils.wandb_writer import WandbWriter
 
 
 class Engine(object):
@@ -127,7 +128,8 @@ class Engine(object):
         visrank_topk=10,
         use_metric_cuhk03=False,
         ranks=[1, 5, 10, 20],
-        rerank=False
+        rerank=False,
+        wandb_config=None
     ):
         r"""A unified pipeline for training and evaluating a model.
 
@@ -179,7 +181,10 @@ class Engine(object):
             return
 
         if self.writer is None:
-            self.writer = SummaryWriter(log_dir=save_dir)
+            if wandb_config:
+                self.writer = WandbWriter(wandb_config['project_name'], wandb_config)
+            else:
+                self.writer = SummaryWriter(log_dir=save_dir)
 
         time_start = time.time()
         self.start_epoch = start_epoch
@@ -239,12 +244,15 @@ class Engine(object):
         )
 
         self.num_batches = len(self.train_loader)
+
         end = time.time()
         for self.batch_idx, data in enumerate(self.train_loader):
             data_time.update(time.time() - end)
             loss_summary = self.forward_backward(data)
             batch_time.update(time.time() - end)
             losses.update(loss_summary)
+
+
 
             if (self.batch_idx + 1) % print_freq == 0:
                 nb_this_epoch = self.num_batches - (self.batch_idx + 1)
@@ -284,7 +292,11 @@ class Engine(object):
 
             end = time.time()
 
-        self.update_lr()
+            if isinstance(self.scheduler, torch.optim.lr_scheduler.OneCycleLR):
+                self.update_lr()
+
+        if not isinstance(self.scheduler, torch.optim.lr_scheduler.OneCycleLR):
+            self.update_lr()
 
     def forward_backward(self, data):
         raise NotImplementedError

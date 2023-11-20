@@ -30,6 +30,7 @@ class TripletLoss(nn.Module):
 
         # Compute pairwise distance, replace by the official when merged
         dist = torch.pow(inputs, 2).sum(dim=1, keepdim=True).expand(n, n)
+
         dist = dist + dist.t()
         dist.addmm_(inputs, inputs.t(), beta=1, alpha=-2)
         dist = dist.clamp(min=1e-12).sqrt() # for numerical stability
@@ -45,4 +46,7 @@ class TripletLoss(nn.Module):
 
         # Compute ranking hinge loss
         y = torch.ones_like(dist_an)
-        return self.ranking_loss(dist_an, dist_ap, y)
+
+        rl = self.ranking_loss(dist_an, dist_ap, y)
+
+        return rl

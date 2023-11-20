@@ -15,6 +15,7 @@ yapf
 isort==4.3.21
 imageio
 chardet
+wandb
 # Export --------------------------------------
 # onnx
 # onnx-simplified

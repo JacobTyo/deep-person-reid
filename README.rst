@@ -1,3 +1,13 @@
+Contrastive Multiple Instance Learning
+===========
+This repository is a modified version of Torchreid,
+updated to support Contrastive Multiple Instance Learning (CMIL) for person re-identification.
+
+Set Transformer implementation from:
+https://github.com/juho-lee/set_transformer
+
+Original Torchreid README below:
+
 Torchreid
 ===========
 Torchreid is a library for deep-learning person re-identification, written in `PyTorch <https://pytorch.org/>`_ and developed for our ICCV'19 project, `Omni-Scale Feature Learning for Person Re-Identification <https://arxiv.org/abs/1905.00953>`_.

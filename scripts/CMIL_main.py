@@ -48,7 +48,8 @@ def build_engine(cfg, datamanager, model, optimizer, scheduler):
                     weight_d=cfg.loss.triplet.weight_d,
                     scheduler=scheduler,
                     use_gpu=cfg.use_gpu,
-                    label_smooth=cfg.loss.softmax.label_smooth
+                    label_smooth=cfg.loss.softmax.label_smooth,
+                    bag_size=cfg.train.bag_size,
                 )
             else:
                 engine = torchreid.engine.ImageTripletEngine(
@@ -136,7 +137,7 @@ def main():
         '--root', type=str, default='', help='path to data root'
     )
     parser.add_argument(
-        '--bag_size', type=int, default=100, help='how many instances per bag'
+        '--project', type=str, default='', help='Name of the WandB Project'
     )
     parser.add_argument(
         'opts',
@@ -194,8 +195,9 @@ def main():
 
     optimizer = torchreid.optim.build_optimizer(model, **optimizer_kwargs(cfg))
     scheduler = torchreid.optim.build_lr_scheduler(
-        optimizer, **lr_scheduler_kwargs(cfg)
+        optimizer, steps_per_epoch=len(datamanager.train_loader), **lr_scheduler_kwargs(cfg)
     )
+    print(f'Steps Per Epoch: {len(datamanager.train_loader)}')
 
     if cfg.model.resume and check_isfile(cfg.model.resume):
         cfg.train.start_epoch = resume_from_checkpoint(
@@ -206,7 +208,7 @@ def main():
         'Building {}-engine for {}-reid'.format(cfg.loss.name, cfg.data.type)
     )
     engine = build_engine(cfg, datamanager, model, optimizer, scheduler)
-    engine.run(**engine_run_kwargs(cfg))
+    engine.run(**engine_run_kwargs(cfg), wandb_config=cfg)
 
 
 if __name__ == '__main__':
