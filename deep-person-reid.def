@@ -1,0 +1,15 @@
+Bootstrap: docker
+From: pytorch/pytorch:2.1.0-cuda12.1-cudnn8-devel
+
+%post
+    export DEBIAN_FRONTEND=noninteractive
+    echo 'America/New_York' > /etc/timezone
+    ln -sf /usr/share/zoneinfo/America/New_York /etc/localtime
+
+    # Initialize Conda environment
+    . /opt/conda/etc/profile.d/conda.sh
+    conda activate base
+
+    apt-get -y update
+    apt-get -y install tmux wget curl ca-certificates git sudo ninja-build
+    pip install numpy cython h5py Pillow six scipy opencv-python matplotlib tb-nightly future yacs gdown flake8 yapf isort==4.3.21 imageio chardet wandb

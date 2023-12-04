@@ -137,9 +137,6 @@ def main():
         '--root', type=str, default='', help='path to data root'
     )
     parser.add_argument(
-        '--project', type=str, default='', help='Name of the WandB Project'
-    )
-    parser.add_argument(
         'opts',
         default=None,
         nargs=argparse.REMAINDER,
@@ -208,6 +205,7 @@ def main():
         'Building {}-engine for {}-reid'.format(cfg.loss.name, cfg.data.type)
     )
     engine = build_engine(cfg, datamanager, model, optimizer, scheduler)
+    print(cfg)
     engine.run(**engine_run_kwargs(cfg), wandb_config=cfg)
 
 

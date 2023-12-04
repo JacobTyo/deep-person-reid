@@ -59,8 +59,8 @@ def get_default_config():
     cfg.train.weight_decay = 5e-4
     cfg.train.max_epoch = 60
     cfg.train.start_epoch = 0
-    cfg.train.batch_size = 32
-    cfg.train.bag_size = 100 # how many instances per bag
+    cfg.train.batch_size = 4
+    cfg.train.bag_size = 10 # how many instances per bag
     cfg.train.fixbase_epoch = 0 # number of epochs to fix base layers
     cfg.train.open_layers = [
         'classifier'

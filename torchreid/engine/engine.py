@@ -182,7 +182,7 @@ class Engine(object):
 
         if self.writer is None:
             if wandb_config:
-                self.writer = WandbWriter(wandb_config['project_name'], wandb_config)
+                self.writer = WandbWriter(wandb_config.train.project, wandb_config)
             else:
                 self.writer = SummaryWriter(log_dir=save_dir)
 
