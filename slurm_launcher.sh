@@ -9,7 +9,7 @@
 
 module load singularity
 
-singularity exec --nv /home/jtyo/containers/deep_person_reid.sif bash -c '
+singularity exec --nv /home/jtyo/containers/deep-person-reid.sif bash -c '
     # Load conda and activate the environment
     . /opt/conda/etc/profile.d/conda.sh
     conda activate base
@@ -17,6 +17,9 @@ singularity exec --nv /home/jtyo/containers/deep_person_reid.sif bash -c '
     # Change to the appropriate directory
     cd /home/jtyo/Repos/deep-person-reid
 
+    # update python path
+    export PYTHONPATH=/home/jtyo/Repos/deep-person-reid
+
     # Start a run as a wandb agent
-    wandb agent --count 1 z5knho2e
+    wandb agent --count 1 plung-chingus/CMIL-test2/z5knho2e
 '
