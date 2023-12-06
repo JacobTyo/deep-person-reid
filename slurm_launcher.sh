@@ -21,5 +21,5 @@ singularity exec --nv /home/jtyo/containers/deep-person-reid.sif bash -c '
     export PYTHONPATH=/home/jtyo/Repos/deep-person-reid
 
     # Start a run as a wandb agent
-    wandb agent --count 1 plung-chingus/CMIL-test2/z5knho2e
+    wandb agent --count 1 plung-chingus/CMIL-market1501mil/di66c4jj
 '

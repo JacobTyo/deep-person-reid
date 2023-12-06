@@ -10,7 +10,7 @@ data:
   width: 128
   combineall: False
   transforms: ['random_flip']
-  save_dir: 'log/osnet_x1_0_market1501_softmax_cosinelr_mil_fixedsamp_4'
+  save_dir: 'log/market1501mil_base_sweep'
 
 sampler:
   train_sampler: 'RandomBagSampler'
@@ -26,7 +26,7 @@ loss:
 train:
   optim: 'amsgrad'
   lr: 0.0005
-  max_epoch: 250
+  max_epoch: 50
   batch_size: 10
   fixbase_epoch: 5
   open_layers: ['classifier', 'bag_classifier', 'attention', 'fc']

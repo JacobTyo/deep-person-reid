@@ -93,6 +93,7 @@ def build_engine(cfg, datamanager, model, optimizer, scheduler):
 
 
 def reset_config(cfg, args):
+    # kinda a bummer but need manual mapping
     if args.root:
         cfg.data.root = args.root
     if args.sources:
@@ -119,6 +120,10 @@ def reset_config(cfg, args):
         cfg.loss.triplet.weight_d = args.weight_d
     if args.margin:
         cfg.loss.triplet.margin = args.margin
+    if args.bag_size:
+        cfg.train.bag_size = args.bag_size
+    if args.batch_size:
+        cfg.train.batch_size = args.batch_size
 
 
 def check_cfg(cfg):
@@ -180,6 +185,12 @@ def main():
     )
     parser.add_argument(
         '--margin', type=float, default=0.3, help='distance margin'
+    )
+    parser.add_argument(
+        '--bag_size', type=int, default=5, help='number of images per bag'
+    )
+    parser.add_argument(
+        '--batch_size', type=int, default=5, help='batch size - the number of bags'
     )
     parser.add_argument(
         'opts',
