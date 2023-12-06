@@ -141,4 +141,5 @@ model-zoo/
 debug*
 
 deep-person-reid.sif
+deep-person-reid.sif.zip
 wandb/

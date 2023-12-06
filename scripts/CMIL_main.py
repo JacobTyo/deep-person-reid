@@ -101,6 +101,22 @@ def reset_config(cfg, args):
         cfg.data.targets = args.targets
     if args.transforms:
         cfg.data.transforms = args.transforms
+    if args.lr:
+        cfg.train.lr = args.lr
+    if args.fixbase_epoch:
+        cfg.train.fixbase_epoch = args.fixbase_epoch
+    if args.dist_metric:
+        cfg.test.dist_metric = args.dist_metric
+    if args.normalize_feature:
+        cfg.test.normalize_feature = args.normalize_feature
+    if args.weight_t:
+        cfg.loss.triplet.weight_t = args.weight_t
+    if args.weight_x:
+        cfg.loss.triplet.weight_x = args.weight_x
+    if args.weight_d:
+        cfg.loss.triplet.weight_d = args.weight_d
+    if args.margin:
+        cfg.loss.triplet.margin = args.margin
 
 
 def check_cfg(cfg):
@@ -135,6 +151,30 @@ def main():
     )
     parser.add_argument(
         '--root', type=str, default='', help='path to data root'
+    )
+    parser.add_argument(
+        '--lr', type=float, default=0.0003, help='learning rate'
+    )
+    parser.add_argument(
+        '--fixbase_epoch', type=int, default=0, help='number of epochs to fix base layers'
+    )
+    parser.add_argument(
+        '--dist_metric', type=str, default='euclidean', help='distance metric'
+    )
+    parser.add_argument(
+        '--normalize_feature', type=bool, default=False, help='normalize feature vectors before computing distance'
+    )
+    parser.add_argument(
+        '--weight_t', type=float, default=1., help='weight to balance hard triplet loss'
+    )
+    parser.add_argument(
+        '--weight_x', type=float, default=0., help='weight to balance cross entropy loss'
+    )
+    parser.add_argument(
+        '--weight_d', type=float, default=0.5, help='weight to balance bag and instance difference'
+    )
+    parser.add_argument(
+        '--margin', type=float, default=0.3, help='distance margin'
     )
     parser.add_argument(
         'opts',
