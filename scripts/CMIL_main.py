@@ -101,6 +101,8 @@ def reset_config(cfg, args):
         cfg.data.targets = args.targets
     if args.transforms:
         cfg.data.transforms = args.transforms
+    if args.model_pretrained:
+        cfg.model.pretrained = args.model_pretrained
     if args.lr:
         cfg.train.lr = args.lr
     if args.fixbase_epoch:
@@ -151,6 +153,9 @@ def main():
     )
     parser.add_argument(
         '--root', type=str, default='', help='path to data root'
+    )
+    parser.add_argument(
+        '--model_pretrained', type=bool, default=True, help='use pretrained model'
     )
     parser.add_argument(
         '--lr', type=float, default=0.0003, help='learning rate'
