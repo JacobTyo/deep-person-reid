@@ -202,6 +202,7 @@ def main():
 
     cfg = get_default_config()
     cfg.use_gpu = torch.cuda.is_available()
+    assert cfg.use_gpu, 'CUDA is not available'
     if args.config_file:
         cfg.merge_from_file(args.config_file)
     reset_config(cfg, args)
