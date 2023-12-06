@@ -1,3 +1,14 @@
+#!/bin/bash
+#SBATCH -p zack_reserved
+#SBATCH -t 72:00:00
+#SBATCH --gres=gpu:1
+#SBATCH --mem=50G
+#SBATCH -c 10
+#SBATCH --output=/home/jtyo/slurm_output/%x.%j.out
+#SBATCH --error=/home/jtyo/slurm_output/R-%x.%j.err
+
+module load singularity
+
 singularity exec --nv /home/jtyo/containers/deep_person_reid.sif bash -c '
     # Load conda and activate the environment
     . /opt/conda/etc/profile.d/conda.sh
