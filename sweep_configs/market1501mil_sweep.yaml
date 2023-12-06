@@ -54,5 +54,5 @@ command:
   - ${interpreter}
   - ${program}
   - "--config-file"
-  - "configs/market1501mil_sweep.yaml"
+  - "configs/market1501mil_base_sweep.yaml"
   - ${args}
