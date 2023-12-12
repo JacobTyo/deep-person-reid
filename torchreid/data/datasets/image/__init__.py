@@ -15,3 +15,4 @@ from .market1501 import Market1501
 from .market1501mil import Market1501Mil
 from .dukemtmcreid import DukeMTMCreID
 from .university1652 import University1652
+from .performance import PerformancePhoto

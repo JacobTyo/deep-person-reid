@@ -333,7 +333,7 @@ class Engine(object):
             print('##### Evaluating {} ({}) #####'.format(name, domain))
             query_loader = self.test_loader[name]['query']
             gallery_loader = self.test_loader[name]['gallery']
-            rank1, mAP = self._evaluate(
+            rank1, mAP, cmc = self._evaluate(
                 dataset_name=name,
                 query_loader=query_loader,
                 gallery_loader=gallery_loader,
@@ -348,7 +348,8 @@ class Engine(object):
             )
 
             if self.writer is not None:
-                self.writer.add_scalar(f'Test/{name}/rank1', rank1, self.epoch)
+                for r, c in zip(ranks, cmc):
+                    self.writer.add_scalar(f'Test/{name}/rank{r}', c, self.epoch)
                 self.writer.add_scalar(f'Test/{name}/mAP', mAP, self.epoch)
 
         return rank1
@@ -442,7 +443,7 @@ class Engine(object):
                 topk=visrank_topk
             )
 
-        return cmc[0], mAP
+        return cmc[0], mAP, cmc
 
     def compute_loss(self, criterion, outputs, targets):
         if isinstance(outputs, (tuple, list)):
