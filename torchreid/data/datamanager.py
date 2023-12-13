@@ -23,15 +23,15 @@ class DataManager(object):
     """
 
     def __init__(
-        self,
-        sources=None,
-        targets=None,
-        height=256,
-        width=128,
-        transforms='random_flip',
-        norm_mean=None,
-        norm_std=None,
-        use_gpu=False
+            self,
+            sources=None,
+            targets=None,
+            height=256,
+            width=128,
+            transforms='random_flip',
+            norm_mean=None,
+            norm_std=None,
+            use_gpu=False
     ):
         self.sources = sources
         self.targets = targets
@@ -151,32 +151,34 @@ class ImageDataManager(DataManager):
     data_type = 'image'
 
     def __init__(
-        self,
-        root='',
-        sources=None,
-        targets=None,
-        height=256,
-        width=128,
-        transforms='random_flip',
-        k_tfm=1,
-        norm_mean=None,
-        norm_std=None,
-        use_gpu=True,
-        split_id=0,
-        combineall=False,
-        load_train_targets=False,
-        batch_size_train=32,
-        batch_size_test=32,
-        workers=4,
-        num_instances=4,
-        num_cams=1,
-        num_datasets=1,
-        train_sampler='RandomSampler',
-        train_sampler_t='RandomSampler',
-        cuhk03_labeled=False,
-        cuhk03_classic_split=False,
-        market1501_500k=False,
-        bag_size=None
+            self,
+            root='',
+            sources=None,
+            targets=None,
+            height=256,
+            width=128,
+            transforms='random_flip',
+            k_tfm=1,
+            norm_mean=None,
+            norm_std=None,
+            use_gpu=True,
+            split_id=0,
+            combineall=False,
+            load_train_targets=False,
+            batch_size_train=32,
+            batch_size_test=32,
+            workers=4,
+            num_instances=4,
+            num_cams=1,
+            num_datasets=1,
+            train_sampler='RandomSampler',
+            train_sampler_t='RandomSampler',
+            cuhk03_labeled=False,
+            cuhk03_classic_split=False,
+            market1501_500k=False,
+            bag_size=None,
+            query_set=None,
+            gallery_set=None
     ):
 
         super(ImageDataManager, self).__init__(
@@ -203,7 +205,9 @@ class ImageDataManager(DataManager):
                 split_id=split_id,
                 cuhk03_labeled=cuhk03_labeled,
                 cuhk03_classic_split=cuhk03_classic_split,
-                market1501_500k=market1501_500k
+                market1501_500k=market1501_500k,
+                query_set=query_set,
+                gallery_set=gallery_set
             )
             trainset.append(trainset_)
         trainset = sum(trainset)
@@ -245,7 +249,7 @@ class ImageDataManager(DataManager):
                     transform=self.transform_tr,
                     k_tfm=k_tfm,
                     mode='train',
-                    combineall=False, # only use the training data
+                    combineall=False,  # only use the training data
                     root=root,
                     split_id=split_id,
                     cuhk03_labeled=cuhk03_labeled,
@@ -413,27 +417,27 @@ class VideoDataManager(DataManager):
     data_type = 'video'
 
     def __init__(
-        self,
-        root='',
-        sources=None,
-        targets=None,
-        height=256,
-        width=128,
-        transforms='random_flip',
-        norm_mean=None,
-        norm_std=None,
-        use_gpu=True,
-        split_id=0,
-        combineall=False,
-        batch_size_train=3,
-        batch_size_test=3,
-        workers=4,
-        num_instances=4,
-        num_cams=1,
-        num_datasets=1,
-        train_sampler='RandomSampler',
-        seq_len=15,
-        sample_method='evenly'
+            self,
+            root='',
+            sources=None,
+            targets=None,
+            height=256,
+            width=128,
+            transforms='random_flip',
+            norm_mean=None,
+            norm_std=None,
+            use_gpu=True,
+            split_id=0,
+            combineall=False,
+            batch_size_train=3,
+            batch_size_test=3,
+            workers=4,
+            num_instances=4,
+            num_cams=1,
+            num_datasets=1,
+            train_sampler='RandomSampler',
+            seq_len=15,
+            sample_method='evenly'
     ):
 
         super(VideoDataManager, self).__init__(

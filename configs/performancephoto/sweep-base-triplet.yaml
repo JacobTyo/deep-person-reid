@@ -27,10 +27,10 @@ test:
   visrank: False
   visrank_topk: 10
 
-#loss:
-#  name: 'triplet'
-
 loss:
-  name: 'softmax'
-  softmax:
-    label_smooth: True
+  name: 'triplet'
+
+#loss:
+#  name: 'softmax'
+#  softmax:
+#    label_smooth: True

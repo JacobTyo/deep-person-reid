@@ -124,6 +124,10 @@ def reset_config(cfg, args):
         cfg.train.bag_size = args.bag_size
     if args.batch_size:
         cfg.train.batch_size = args.batch_size
+    if args.gallery_set:
+        cfg.performancephoto.gallery_set = args.gallery_set
+    if args.query_set:
+        cfg.performancephoto.query_set = args.query_set
 
 
 def check_cfg(cfg):
@@ -160,37 +164,43 @@ def main():
         '--root', type=str, default='', help='path to data root'
     )
     parser.add_argument(
-        '--model_pretrained', type=bool, default=True, help='use pretrained model'
+        '--model_pretrained', type=bool, default=None, help='use pretrained model'
     )
     parser.add_argument(
-        '--lr', type=float, default=0.0003, help='learning rate'
+        '--lr', type=float, default=None, help='learning rate'
     )
     parser.add_argument(
-        '--fixbase_epoch', type=int, default=0, help='number of epochs to fix base layers'
+        '--fixbase_epoch', type=int, default=None, help='number of epochs to fix base layers'
     )
     parser.add_argument(
-        '--dist_metric', type=str, default='euclidean', help='distance metric'
+        '--dist_metric', type=str, default=None, help='distance metric'
     )
     parser.add_argument(
-        '--normalize_feature', type=bool, default=False, help='normalize feature vectors before computing distance'
+        '--normalize_feature', type=bool, default=None, help='normalize feature vectors before computing distance'
     )
     parser.add_argument(
-        '--weight_t', type=float, default=1., help='weight to balance hard triplet loss'
+        '--weight_t', type=float, default=None, help='weight to balance hard triplet loss'
     )
     parser.add_argument(
-        '--weight_x', type=float, default=0., help='weight to balance cross entropy loss'
+        '--weight_x', type=float, default=None, help='weight to balance cross entropy loss'
     )
     parser.add_argument(
-        '--weight_d', type=float, default=0, help='weight to balance bag and instance difference'
+        '--weight_d', type=float, default=None, help='weight to balance bag and instance difference'
     )
     parser.add_argument(
-        '--margin', type=float, default=0.3, help='distance margin'
+        '--margin', type=float, default=None, help='distance margin'
     )
     parser.add_argument(
         '--bag_size', type=int, default=None, help='number of images per bag'
     )
     parser.add_argument(
-        '--batch_size', type=int, default=5, help='batch size - the number of bags'
+        '--batch_size', type=int, default=None, help='batch size - the number of bags'
+    )
+    parser.add_argument(
+        '--query_set', type=str, default=None, help='query set to use for evaluation (directory name)'
+    )
+    parser.add_argument(
+        '--gallery_set', type=str, default=None, help='gallery set to use for evaluation (directory name)'
     )
     parser.add_argument(
         'opts',
@@ -220,6 +230,10 @@ def main():
 
     if cfg.use_gpu:
         torch.backends.cudnn.benchmark = True
+
+    # some quick checks
+    if 'performancephoto' in cfg.data.targets:
+        assert cfg.cuhk03.use_metric_cuhk03 is True, 'PerformancePhoto only supports the cuhk03 evaluation method'
 
     datamanager = build_datamanager(cfg)
 

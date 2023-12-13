@@ -23,6 +23,8 @@ class PerformancePhoto(ImageDataset):
     s3_bucket = ''
 
     def __init__(self,
+                 query_set='query_all',
+                 gallery_set='gallery_all',
                  endpoint='',
                  username='',
                  password='',
@@ -54,8 +56,8 @@ class PerformancePhoto(ImageDataset):
         self.train_dir = osp.join(self.data_dir, 'bounding_box_train')
         # self.query_dir = osp.join(self.data_dir, 'query')
         # self.gallery_dir = osp.join(self.data_dir, 'bounding_box_test')
-        self.query_dir = osp.join(self.data_dir, 'query_all')
-        self.gallery_dir = osp.join(self.data_dir, 'gallery_all')
+        self.query_dir = osp.join(self.data_dir, query_set)
+        self.gallery_dir = osp.join(self.data_dir, gallery_set)
 
         required_files = [
             self.data_dir, self.train_dir, self.query_dir, self.gallery_dir
