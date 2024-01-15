@@ -17,7 +17,7 @@ def get_default_config():
     cfg.data.root = 'reid-data'
     cfg.data.sources = ['market1501']
     cfg.data.targets = ['market1501']
-    cfg.data.workers = 4 # number of data loading workers
+    cfg.data.workers = 12 # number of data loading workers
     cfg.data.split_id = 0 # split index
     cfg.data.height = 256 # image height
     cfg.data.width = 128 # image width

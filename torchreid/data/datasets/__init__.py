@@ -2,7 +2,7 @@ from __future__ import print_function, absolute_import
 
 from .image import (
     GRID, PRID, CUHK01, CUHK02, CUHK03, MSMT17, MSMT17mil, CUHKSYSU, VIPeR, SenseReID,
-    Market1501, Market1501Mil, DukeMTMCreID, University1652, iLIDS, PerformancePhoto
+    Market1501, Market1501Mil, DukeMTMCreID, University1652, iLIDS, PerformancePhoto, SYSU30k
 )
 from .video import PRID2011, Mars, DukeMTMCVidReID, iLIDSVID
 from .dataset import Dataset, ImageDataset, VideoDataset
@@ -23,7 +23,8 @@ __image_datasets = {
     'cuhk02': CUHK02,
     'university1652': University1652,
     'cuhksysu': CUHKSYSU,
-    'performancephoto': PerformancePhoto
+    'performancephoto': PerformancePhoto,
+    'sysu30k': SYSU30k
 }
 
 __video_datasets = {

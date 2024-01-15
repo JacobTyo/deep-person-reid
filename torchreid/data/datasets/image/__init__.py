@@ -16,3 +16,4 @@ from .market1501mil import Market1501Mil
 from .dukemtmcreid import DukeMTMCreID
 from .university1652 import University1652
 from .performance import PerformancePhoto
+from .sysu30k import SYSU30k

@@ -37,7 +37,8 @@ def build_engine(cfg, datamanager, model, optimizer, scheduler):
             )
 
         else:
-            if 'mil' in cfg.data.sources[0]:
+            if 'mil' in cfg.data.sources[0] or 'sysu30k' in cfg.data.sources:
+                print('-------------------------Using MIL Engine-------------------------')
                 engine = torchreid.engine.ImageMilTripletEngine(
                     datamanager,
                     model,
@@ -205,7 +206,7 @@ def main():
     assert cfg.use_gpu, 'CUDA is not available'
     if args.config_file:
         cfg.merge_from_file(args.config_file)
-    reset_config(cfg, args)
+    # reset_config(cfg, args)
     cfg.merge_from_list(args.opts)
     set_random_seed(cfg.train.seed)
     check_cfg(cfg)

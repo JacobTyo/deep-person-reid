@@ -348,8 +348,8 @@ class Engine(object):
             )
 
             if self.writer is not None:
-                for r, c in zip(ranks, cmc):
-                    self.writer.add_scalar(f'Test/{name}/rank{r}', c, self.epoch)
+                for r in ranks:
+                    self.writer.add_scalar(f'Test/{name}/rank{r}', cmc[r - 1], self.epoch)
                 self.writer.add_scalar(f'Test/{name}/mAP', mAP, self.epoch)
 
         return rank1
