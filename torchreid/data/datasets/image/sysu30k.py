@@ -119,30 +119,29 @@ class SYSU30k(ImageDataset):
         print("=> Loading image paths into (x,y) ...")
 
         # get all identities:
-        pid_container = set()
-        # only get first 1k identities
-        for img_path in tqdm(img_paths):
-            # if the image path doesn't exist, don't include it
-            if not osp.exists(osp.join(base_dir, img_path.strip())):
-                continue
-            pid = img_path.split('/')[0].strip()
-            pid_container.add(pid)
-            if 'train' in txt_file and len(pid_container) >= 1000:
-                break
-        for pid in pid_container:
-            if pid not in self.pid2label:
-                self.pid2label[pid] = len(self.pid2label)
+        # pid_container = set()
+        # for img_path in tqdm(img_paths):
+        #     # if the image path doesn't exist, don't include it
+        #     if not osp.exists(osp.join(base_dir, img_path.strip())):
+        #         continue
+        #     pid = img_path.split('/')[0].strip()
+        #     pid_container.add(pid)
+        #     # if 'train' in txt_file and len(pid_container) >= 1000:
+        #     #     break
+        # for pid in pid_container:
+        #     if pid not in self.pid2label:
+        #         self.pid2label[pid] = len(self.pid2label)
 
-        num_pids = len(self.pid2label)
-        assert num_pids > 0, "No identities found in {}".format(txt_file)
-        print("=> Found {} identities in {}.".format(num_pids, txt_file))
+        # num_pids = len(self.pid2label)
+        # assert num_pids > 0, "No identities found in {}".format(txt_file)
+        # print("=> Found {} identities in {}.".format(num_pids, txt_file))
 
         # extract data
         data = []
         for img_path in img_paths:
             pid = img_path.split('/')[0].strip()
             if pid not in self.pid2label:
-                continue
+                self.pid2label[pid] = len(self.pid2label)
             label = self.pid2label[pid]
             # get the camera id, if it exists:
             try:
