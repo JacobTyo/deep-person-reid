@@ -1,6 +1,7 @@
 from __future__ import division, print_function, absolute_import
 import copy
 import glob
+import os
 import os.path as osp
 from tqdm import tqdm
 
@@ -120,30 +121,21 @@ class SYSU30k(ImageDataset):
 
         # if a "data_cleaned.txt" file exists in the current repository, skip this step
         if not osp.exists(osp.join(base_dir, 'data_cleaned.txt')):
-            # get all identities:
-            pid_container = set()
-            for img_path in tqdm(img_paths):
-                # if the image path doesn't exist, don't include it
-                if not osp.exists(osp.join(base_dir, img_path.strip())):
-                    # remove this line from the txt file
-                    img_paths.remove(img_path)
-                    continue
-                pid = img_path.split('/')[0].strip()
-                pid_container.add(pid)
-                # if 'train' in txt_file and len(pid_container) >= 1000:
-                #     break
-            for pid in pid_container:
-                if pid not in self.pid2label:
-                    self.pid2label[pid] = len(self.pid2label)
+            # first get a list of the files that exist:
+            existing_files = set()
+            print(f"=> Getting a list of all existing files in base_dir {base_dir} ...")
+            for dirpath, dirnames, filenames in tqdm(os.walk(base_dir)):
+                for filename in filenames:
+                    existing_files.add(os.path.join(dirpath, filename))
 
-            # remove images that don't exist from the txt file
+            # now remove the img_paths that don't exist:
+            print(f"Removing {len(img_paths) - len(existing_files)} images that don't exist ...")
+            img_paths = [x for x in tqdm(img_paths) if osp.join(base_dir, x.strip()) in existing_files]
+
+            # save new txt file
             with open(osp.join(base_dir, txt_file), 'w') as f:
                 for img_path in img_paths:
                     f.write(img_path)
-
-        num_pids = len(self.pid2label)
-        assert num_pids > 0, "No identities found in {}".format(txt_file)
-        print("=> Found {} identities in {}.".format(num_pids, txt_file))
 
         # extract data
         data = []
