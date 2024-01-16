@@ -119,14 +119,22 @@ class SYSU30k(ImageDataset):
         print("=> Found {} images in {}.".format(num_imgs, txt_file))
         print("=> Loading image paths into (x,y) ...")
 
+        files_have_been_processed_cache = osp.join(base_dir, txt_file + '.processed')
+
         # if a "data_cleaned.txt" file exists in the current repository, skip this step
-        if not osp.exists(osp.join(base_dir, 'data_cleaned.txt')):
+        if not osp.exists(files_have_been_processed_cache):
             # first get a list of the files that exist:
-            existing_files = set()
             print(f"=> Getting a list of all existing files in base_dir {base_dir} ...")
-            for dirpath, dirnames, filenames in tqdm(os.walk(base_dir)):
-                for filename in filenames:
-                    existing_files.add(os.path.join(dirpath, filename))
+
+            existing_files = set()
+            def process_directory(path):
+                for entry in os.scandir(path):
+                    if entry.is_dir():
+                        process_directory(entry.path)
+                    elif entry.is_file():
+                        existing_files.add(entry.path)
+
+            process_directory(base_dir)
 
             # now remove the img_paths that don't exist:
             print(f"Removing {len(img_paths) - len(existing_files)} images that don't exist ...")
@@ -137,9 +145,14 @@ class SYSU30k(ImageDataset):
                 for img_path in img_paths:
                     f.write(img_path)
 
+            # and create the cache file
+            with open(files_have_been_processed_cache, 'w') as f:
+                f.write('done')
+
         # extract data
+        print(f"=> Loading data ...")
         data = []
-        for img_path in img_paths:
+        for img_path in tqdm(img_paths):
             pid = img_path.split('/')[0].strip()
             if pid not in self.pid2label:
                 self.pid2label[pid] = len(self.pid2label)
