@@ -138,60 +138,62 @@ def main():
         formatter_class=argparse.ArgumentDefaultsHelpFormatter
     )
     parser.add_argument(
-        '--config-file', type=str, default='', help='path to config file'
+        '--config-file', type=str, default=None, help='path to config file'
     )
     parser.add_argument(
         '-s',
         '--sources',
         type=str,
         nargs='+',
+        default=None,
         help='source datasets (delimited by space)'
     )
     parser.add_argument(
         '-t',
         '--targets',
         type=str,
+        default=None,
         nargs='+',
         help='target datasets (delimited by space)'
     )
     parser.add_argument(
-        '--transforms', type=str, nargs='+', help='data augmentation'
+        '--transforms', type=str, nargs='+', default=None, help='data augmentation'
     )
     parser.add_argument(
-        '--root', type=str, default='', help='path to data root'
+        '--root', type=str, default=None, help='path to data root'
     )
     parser.add_argument(
-        '--model_pretrained', type=bool, default=True, help='use pretrained model'
+        '--model_pretrained', type=bool, default=None, help='use pretrained model'
     )
     parser.add_argument(
-        '--lr', type=float, default=0.0003, help='learning rate'
+        '--lr', type=float, default=None, help='learning rate'
     )
     parser.add_argument(
-        '--fixbase_epoch', type=int, default=0, help='number of epochs to fix base layers'
+        '--fixbase_epoch', type=int, default=None, help='number of epochs to fix base layers'
     )
     parser.add_argument(
-        '--dist_metric', type=str, default='euclidean', help='distance metric'
+        '--dist_metric', type=str, default=None, help='distance metric'
     )
     parser.add_argument(
-        '--normalize_feature', type=bool, default=False, help='normalize feature vectors before computing distance'
+        '--normalize_feature', type=bool, default=None, help='normalize feature vectors before computing distance'
     )
     parser.add_argument(
-        '--weight_t', type=float, default=1., help='weight to balance hard triplet loss'
+        '--weight_t', type=float, default=None, help='weight to balance hard triplet loss'
     )
     parser.add_argument(
-        '--weight_x', type=float, default=0., help='weight to balance cross entropy loss'
+        '--weight_x', type=float, default=None, help='weight to balance cross entropy loss'
     )
     parser.add_argument(
-        '--weight_d', type=float, default=0.5, help='weight to balance bag and instance difference'
+        '--weight_d', type=float, default=None, help='weight to balance bag and instance difference'
     )
     parser.add_argument(
-        '--margin', type=float, default=0.3, help='distance margin'
+        '--margin', type=float, default=None, help='distance margin'
     )
     parser.add_argument(
-        '--bag_size', type=int, default=5, help='number of images per bag'
+        '--bag_size', type=int, default=None, help='number of images per bag'
     )
     parser.add_argument(
-        '--batch_size', type=int, default=5, help='batch size - the number of bags'
+        '--batch_size', type=int, default=None, help='batch size - the number of bags'
     )
     parser.add_argument(
         'opts',
@@ -206,7 +208,7 @@ def main():
     assert cfg.use_gpu, 'CUDA is not available'
     if args.config_file:
         cfg.merge_from_file(args.config_file)
-    # reset_config(cfg, args)
+    reset_config(cfg, args)
     cfg.merge_from_list(args.opts)
     set_random_seed(cfg.train.seed)
     check_cfg(cfg)

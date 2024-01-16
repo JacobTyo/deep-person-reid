@@ -12,6 +12,7 @@ data:
   combineall: False
   transforms: ['random_flip']
   save_dir: 'log/sysu30k'
+  workers: 4
 
 sampler:
   train_sampler: 'RandomBagSampler'
@@ -30,7 +31,7 @@ test:
   batch_size: 300
   dist_metric: 'euclidean'
   normalize_feature: False
-  evaluate: True
+  evaluate: False
   eval_freq: 1
   rerank: False
 
