@@ -155,7 +155,7 @@ class SYSU30k(ImageDataset):
         for img_path in tqdm(img_paths):
             pid = img_path.split('/')[0].strip()
             if pid not in self.pid2label:
-                self.pid2label[pid] = len(self.pid2label)
+                self.pid2label[pid] = len(self.pid2label) - 1  # minus one here to ignore "0000others" label
             label = self.pid2label[pid]
             # get the camera id, if it exists:
             try:
