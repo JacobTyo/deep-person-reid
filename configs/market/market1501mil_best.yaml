@@ -24,6 +24,7 @@ loss:
     margin: 0.9992281233519684
 
 train:
+  project: 'market1501_best'
   optim: 'amsgrad'
   lr: 0.00021145102244686487
   max_epoch: 250
