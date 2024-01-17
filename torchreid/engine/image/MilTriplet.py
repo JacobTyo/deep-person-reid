@@ -174,11 +174,12 @@ class ImageMilTripletEngine(Engine):
         return loss_summary
 
     def test(self, *args, **kwargs):
-        if 'sysu30k' in self.datamanager.sources:
-            # follow the sysu30k evaluation procedure, otherwise, normal evaluation
-            self.test_sysu30k(*args, **kwargs)
-        else:
-            super(ImageMilTripletEngine, self).test(*args, **kwargs)
+        super(ImageMilTripletEngine, self).test(*args, **kwargs)
+        # if 'sysu30k' in self.datamanager.sources:
+        #     # follow the sysu30k evaluation procedure, otherwise, normal evaluation
+        #     self.test_sysu30k(*args, **kwargs)
+        # else:
+        #     super(ImageMilTripletEngine, self).test(*args, **kwargs)
 
     @torch.no_grad()
     def test_sysu30k(self, *args, ranks=[1, 5, 10, 20], **kwargs):
