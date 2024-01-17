@@ -26,7 +26,7 @@ loss:
 train:
   optim: 'amsgrad'
   lr: 0.00021145102244686487
-  max_epoch: 50
+  max_epoch: 250
   batch_size: 10
   fixbase_epoch: 7
   open_layers: ['classifier', 'bag_classifier', 'attention', 'fc']
