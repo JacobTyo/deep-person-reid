@@ -292,6 +292,10 @@ class Engine(object):
 
             end = time.time()
 
+            if self.batch_idx > 5000:
+                print('breaking the training loop early to test.')
+                break
+
             if isinstance(self.scheduler, torch.optim.lr_scheduler.OneCycleLR):
                 self.update_lr()
 
