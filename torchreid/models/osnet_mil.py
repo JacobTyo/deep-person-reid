@@ -177,11 +177,22 @@ class OSNetMil(OSNet):
         num_heads=8,
         batch_size=1,
         bag_size=1,
+        acc_fn='set_transformer',
         **kwargs
     ):
         super(OSNetMil, self).__init__(num_classes, blocks, layers, channels, **kwargs)
         self.single_batch_attn_size = self.feature_dim
-        self.attention = BagMultiheadAttention(self.single_batch_attn_size, num_heads=num_heads)
+        if acc_fn == 'set_transformer':
+            self.attention = BagMultiheadAttention(self.single_batch_attn_size, num_heads=num_heads)
+        elif acc_fn == 'max':
+            # Use Max Pooling for bag representation
+            self.attention = nn.AdaptiveMaxPool1d(1)
+        elif acc_fn == 'avg':
+            # Use the average bag representation
+            self.attention = nn.AdaptiveAvgPool1d(1)
+        else:
+            raise NotImplementedError(f'Accumulation function {acc_fn} not implemented.')
+
         self.bag_classifier = nn.Linear(self.single_batch_attn_size, num_classes)
 
     def bag_attention(self, bags_of_instances):

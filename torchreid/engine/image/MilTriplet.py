@@ -149,10 +149,10 @@ class ImageMilTripletEngine(Engine):
         loss = 0
         loss_summary = {}
 
-        # if self.weight_t > 0:
-        loss_t = self.compute_loss(self.criterion_t, bag_features, grouped_bag_labels)
-        loss += self.weight_t * loss_t
-        loss_summary['loss_t'] = loss_t.item()
+        if self.weight_t > 0:
+            loss_t = self.compute_loss(self.criterion_t, bag_features, grouped_bag_labels)
+            loss += self.weight_t * loss_t
+            loss_summary['loss_t'] = loss_t.item()
 
         # if self.weight_x > 0:
         loss_x = self.compute_loss(self.criterion_x, bag_predictions, grouped_bag_labels)
@@ -160,10 +160,10 @@ class ImageMilTripletEngine(Engine):
         loss_summary['loss_x'] = loss_x.item()
         loss_summary['acc'] = metrics.accuracy(outputs, pids)[0].item()
 
-        # if self.weight_d > 0:
-        loss_d = self.criterion_d(bag_features, grouped_bag_features)
-        loss += self.weight_d * loss_d
-        loss_summary['loss_d'] = loss_d.item()
+        if self.weight_d > 0:
+            loss_d = self.criterion_d(bag_features, grouped_bag_features)
+            loss += self.weight_d * loss_d
+            loss_summary['loss_d'] = loss_d.item()
 
         assert loss_summary
 
