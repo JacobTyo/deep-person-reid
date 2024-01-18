@@ -12,7 +12,7 @@ data:
   combineall: False
   transforms: ['random_flip']
   save_dir: 'log/sysu30k'
-  workers: 4
+  workers: 1
 
 sampler:
   train_sampler: 'RandomBagSampler'
@@ -21,7 +21,7 @@ train:
   optim: 'amsgrad'
   lr: 0.0005
   max_epoch: 5
-  batch_size: 10
+  batch_size: 20
   fixbase_epoch: 1
   open_layers: ['classifier', 'bag_classifier', 'attention', 'fc']
   lr_scheduler: 'one_cycle'

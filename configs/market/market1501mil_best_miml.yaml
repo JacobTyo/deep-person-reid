@@ -11,7 +11,6 @@ data:
   combineall: False
   transforms: ['random_flip']
   save_dir: 'log/market1501mil_best_hp'
-  mil_duplicates: 3
 
 sampler:
   train_sampler: 'RandomBagSampler'
@@ -19,13 +18,13 @@ sampler:
 loss:
   name: 'triplet'
   triplet:
-    weight_t: 0.5637954143364748
+    weight_t: 0.0
     weight_x: 0.38722407672685
     weight_d: 0.0
     margin: 0.9992281233519684
 
 train:
-  project: 'market1501_best_75'
+  project: 'market1501_best'
   optim: 'amsgrad'
   lr: 0.00021145102244686487
   max_epoch: 250
