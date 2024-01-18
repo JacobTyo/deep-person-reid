@@ -26,7 +26,7 @@ class Market1501Mil(ImageDataset):
     dataset_dir = 'market1501'
     dataset_url = 'http://188.138.127.15:81/Datasets/Market-1501-v15.09.15.zip'
 
-    def __init__(self, root='', market1501_500k=False, **kwargs):
+    def __init__(self, root='', market1501_500k=False, duplicates=4, **kwargs):
         self.root = osp.abspath(osp.expanduser(root))
         self.dataset_dir = osp.join(self.root, self.dataset_dir)
         self.download_dataset(self.dataset_dir, self.dataset_url)
@@ -48,6 +48,7 @@ class Market1501Mil(ImageDataset):
         self.gallery_dir = osp.join(self.data_dir, 'bounding_box_test')
         self.extra_gallery_dir = osp.join(self.data_dir, 'images')
         self.market1501_500k = market1501_500k
+        self.duplicates = duplicates
 
         required_files = [
             self.data_dir, self.train_dir, self.query_dir, self.gallery_dir
@@ -90,7 +91,7 @@ class Market1501Mil(ImageDataset):
             data.append((img_path, pid, camid))
             if add_mil_noise:
                 # add the image three more times, with a random pid that is not the same as the original pid
-                for i in range(3):
+                for i in range(self.duplicates):
                     new_pid = pid
                     while new_pid == pid:
                         if relabel:

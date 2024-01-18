@@ -28,6 +28,7 @@ def get_default_config():
     cfg.data.norm_std = [0.229, 0.224, 0.225] # default is imagenet std
     cfg.data.save_dir = 'log' # path to save log
     cfg.data.load_train_targets = False # load training set from target dataset
+    cfg.data.mil_duplicates = 3 # number of times to duplicate an image in a bag with a incorrect label
 
     # specific datasets
     cfg.market1501 = CN()
@@ -145,7 +146,8 @@ def imagedata_kwargs(cfg):
         'market1501_500k': cfg.market1501.use_500k_distractors,
         # performance photo specific
         'query_set': cfg.performancephoto.query_set,
-        'gallery_set': cfg.performancephoto.gallery_set
+        'gallery_set': cfg.performancephoto.gallery_set,
+        'duplicates': cfg.data.mil_duplicates
     }
 
 

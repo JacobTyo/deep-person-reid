@@ -11,6 +11,7 @@ data:
   combineall: False
   transforms: ['random_flip']
   save_dir: 'log/market1501mil_best_hp'
+  mil_duplicates: 2
 
 sampler:
   train_sampler: 'RandomBagSampler'
