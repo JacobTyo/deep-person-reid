@@ -186,10 +186,10 @@ class OSNetMil(OSNet):
             self.attention = BagMultiheadAttention(self.single_batch_attn_size, num_heads=num_heads)
         elif acc_fn == 'max':
             # Use Max Pooling for bag representation
-            self.attention = nn.AdaptiveMaxPool1d(1)
+            self.attention = lambda x: torch.max(x, dim=1)[0]
         elif acc_fn == 'avg':
             # Use the average bag representation
-            self.attention = nn.AdaptiveAvgPool1d(1)
+            self.attention = lambda x: torch.mean(x, dim=1)
         else:
             raise NotImplementedError(f'Accumulation function {acc_fn} not implemented.')
 

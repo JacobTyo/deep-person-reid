@@ -10,6 +10,7 @@ def get_default_config():
     cfg.model.pretrained = True # automatically load pretrained model weights if available
     cfg.model.load_weights = '' # path to model weights
     cfg.model.resume = '' # path to checkpoint for resume training
+    cfg.model.acc_fn = 'set_transformer' # accumulation function for MIL
 
     # data
     cfg.data = CN()

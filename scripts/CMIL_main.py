@@ -234,7 +234,8 @@ def main():
         pretrained=cfg.model.pretrained,
         use_gpu=cfg.use_gpu,
         batch_size=cfg.train.batch_size,
-        bag_size=cfg.train.bag_size
+        bag_size=cfg.train.bag_size,
+        acc_fn=cfg.model.acc_fn
     )
 
     # print(model)

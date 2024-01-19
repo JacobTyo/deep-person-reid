@@ -2,7 +2,7 @@
 #SBATCH -p zack_reserved
 #SBATCH -t 72:00:00
 #SBATCH --gres=gpu:1
-#SBATCH --mem=50G
+#SBATCH --mem=32G
 #SBATCH -c 10
 #SBATCH --output=/home/jtyo/slurm_output/%x.%j.out
 #SBATCH --error=/home/jtyo/slurm_output/R-%x.%j.err
