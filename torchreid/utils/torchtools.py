@@ -130,7 +130,11 @@ def resume_from_checkpoint(fpath, model, optimizer=None, scheduler=None):
     start_epoch = checkpoint['epoch']
     print('Last epoch = {}'.format(start_epoch))
     if 'rank1' in checkpoint.keys():
-        print('Last rank1 = {:.1%}'.format(checkpoint['rank1']))
+        try:
+            print('Last rank1 = {:.1%}'.format(checkpoint['rank1']))
+        except:
+            print('weird')
+            print(checkpoint['rank1'])
     return start_epoch
 
 

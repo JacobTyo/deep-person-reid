@@ -19,17 +19,17 @@ sampler:
 
 train:
   optim: 'amsgrad'
-  lr: 0.0005
-  max_epoch: 5
+  lr: 0.000212
+  max_epoch: 50
   batch_size: 10
-  fixbase_epoch: 1
+  fixbase_epoch: 3
   open_layers: ['classifier', 'bag_classifier', 'attention', 'fc']
   lr_scheduler: 'one_cycle'
   bag_size: 20
 
 test:
   batch_size: 300
-  dist_metric: 'euclidean'
+  dist_metric: 'cosine'
   normalize_feature: False
   evaluate: False
   eval_freq: 1
@@ -38,7 +38,7 @@ test:
 loss:
   name: 'triplet'
   triplet:
-    weight_t: 1.0
-    weight_x: 1.0
+    weight_t: 0.5637954143364748
+    weight_x: 0.38722407672685
     weight_d: 0.0
-    margin: 1.0
+    margin: 0.9992281233519684

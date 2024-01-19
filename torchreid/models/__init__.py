@@ -22,6 +22,7 @@ from .resnet_ibn_a import *
 from .resnet_ibn_b import *
 from .shufflenetv2 import *
 from .inceptionresnetv2 import *
+from .set_transformer import *
 
 __model_factory = {
     # image classification models
