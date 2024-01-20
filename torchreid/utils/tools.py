@@ -105,6 +105,7 @@ def read_image(path):
         PIL image
     """
     got_img = False
+    num_errors = 0
     if not osp.exists(path):
         raise IOError('"{}" does not exist'.format(path))
     while not got_img:
@@ -116,6 +117,13 @@ def read_image(path):
                 'IOError incurred when reading "{}". Will redo. Don\'t worry. Just chill.'
                 .format(path)
             )
+            num_errors += 1
+            if num_errors > 50:
+                raise IOError(
+                    'Failed to read "{}" after {} retries.'.format(
+                        path, num_errors
+                    )
+                )
     return img
 
 
