@@ -109,7 +109,7 @@ class PerformancePhoto(ImageDataset):
                         # skip headers
                         continue
                     object_id, image_id = line.strip().split(',')[:2]
-                    object_id, image_id = self.clean_csv_map_data(object_id), self.clean_csv_map_data(iamge_id)
+                    object_id, image_id = self.clean_csv_map_data(object_id), self.clean_csv_map_data(image_id)
 
                     object_id_to_image_id[object_id] = image_id
 
