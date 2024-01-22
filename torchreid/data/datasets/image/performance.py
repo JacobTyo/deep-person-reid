@@ -114,17 +114,23 @@ class PerformancePhoto(ImageDataset):
                     object_id_to_image_id[object_id] = image_id
 
         data = []
+        skipped_count = 0
         for img_path in img_paths:
             person_id, event_id = map(int, pattern.search(img_path).groups())
 
             # make classes incrementing
-            print(f'person_id: {person_id}')
-            print(type(person_id))
-            label_id = person_id if not real_mil else object_id_to_image_id[person_id]
+            try:
+                label_id = person_id if not real_mil else object_id_to_image_id[person_id]
+            except:
+                # if there is a problem with the person_id, just skip it
+                skipped_count += 1
+                continue
             if label_id not in self.id_mapping:
                 self.id_mapping[label_id] = self.id_counter
                 self.id_counter += 1
             label = self.id_mapping[label_id]
             data.append((img_path, label, event_id))
 
+        if self.real_mil:
+            print(f'Mil only, this is expected: Skipped {skipped_count} images due to missing object_id_to_image_id mapping')
         return data
