@@ -4,6 +4,8 @@ import glob
 import os.path as osp
 import os
 import shutil
+from collections import defaultdict
+
 from tqdm import tqdm
 from ..dataset import ImageDataset
 
@@ -68,9 +70,10 @@ class PerformancePhoto(ImageDataset):
         self.check_before_run(required_files)
         # This needs fixed somehow - the query and test dirs are identical. That should not be the case.
         #   Query should be one this, and gallery another
-        train = self.process_dir(self.train_dir, real_mil=self.real_mil)
-        query = self.process_dir(self.query_dir, real_mil=False)
-        gallery = self.process_dir(self.gallery_dir, real_mil=False)
+        mil_extra_data_path = osp.join(self.data_dir, 'mil_images') if self.real_mil else None
+        train = self.process_dir(self.train_dir, mil_extra_data_path=mil_extra_data_path)
+        query = self.process_dir(self.query_dir, mil_extra_data_path=None)
+        gallery = self.process_dir(self.gallery_dir, mil_extra_data_path=None)
 
         # can make this hard somehow? Different test sets? What about the eval I've done?
 
@@ -95,42 +98,81 @@ class PerformancePhoto(ImageDataset):
     def clean_csv_map_data(self, text):
         return int(re.findall(r'\d+', text)[0])
 
-    def process_dir(self, dir_path, real_mil=False):
+    def process_dir_MIL(self, dir_path, mil_extra_data_path=None):
+        # first build the relationships we'll need to make the dataset
+        # each object only has one image
+        objectid2imageid = defaultdict(int)
+        # but each image can have multiple object
+        imageid2objectid = defaultdict(set)
+        # load the object_id_to_image_id.csv file
+        with open(os.path.join(self.dataset_dir, 'object_id_to_image_id.csv'), 'r') as f:
+            for line_idx, line in enumerate(f.readlines()):
+                if line_idx == 0:
+                    # skip headers
+                    continue
+                object_id, image_id = line.strip().split(',')[:2]
+                object_id, image_id = self.clean_csv_map_data(object_id), self.clean_csv_map_data(image_id)
+
+                objectid2imageid[object_id] = image_id
+                imageid2objectid[image_id].add(object_id)
+
+        # Now, interpret the person_id as a bag. Use this to build a dict of bag_ids to a list of image_ids
+        bagids2objectids = defaultdict(set)
+        objectids2bagids = defaultdict(set)
+        objectid2imgpath = defaultdict(str)
         img_paths = glob.glob(osp.join(dir_path, '*.png'))
-        # save the image. Format: person(cluster/label)ID_detectedObjectID_eventID.png
+        pattern = re.compile(r'([-\d]+)_([-\d]+)_([-\d]+).png')
+        for img_path in img_paths:
+            bag_id, obj_id, event_id = map(int, pattern.search(img_path).groups())
+            bagids2objectids[bag_id].add(obj_id)
+            objectids2bagids[obj_id].add(bag_id)
+            objectid2imgpath[obj_id] = img_path
+
+        # now we need to construct a mapping that identifies what images comprise each bag.
+        # we do this by taking each object_id in a bag, and then getting their image id
+        bagids2imageids = defaultdict(set)
+        imageids2bagids = defaultdict(set)
+        for bag_id, object_ids in bagids2objectids.items():
+            for object_id in object_ids:
+                this_object_image_id = objectid2imageid[object_id]
+                bagids2imageids[bag_id].add(this_object_image_id)
+                imageids2bagids[this_object_image_id].add(bag_id)
+
+        # and now finally, we can construct each bag fully, based off of all objects in each image
+        data = []
+        bag_id_map = {}
+        for bag_id, image_ids in bagids2imageids.items():
+            for image_id in image_ids:
+                object_ids = imageid2objectid[image_id]
+                for object_id in object_ids:
+                    # needs to be image_path, bag_id (label), 0
+                    if bag_id not in bag_id_map:
+                        bag_id_map[bag_id] = len(bag_id_map)
+                    label = bag_id_map[bag_id]
+                    data.append((objectid2imgpath[object_id], label, 0))
+
+        # great, now the normal data is dealt with, but we do not have the extra MIL data. How do we work it in?
+        # TODO
+        raise NotImplementedError('MIL loading not done')
+
+
+    def process_dir(self, dir_path, mil_extra_data_path=None):
+        if mil_extra_data_path:
+            return self.process_dir_MIL(dir_path, mil_extra_data_path)
+
+        # path to the well labeled re-id images
+        img_paths = glob.glob(osp.join(dir_path, '*.png'))
+        # a regex pattern to extract information of interest
         pattern = re.compile(r'([-\d]+)_[-\d]+_([-\d]+).png')
-        object_id_to_image_id = {}
-
-        if real_mil:
-            # load the object_id_to_image_id.csv file, and label with respect to the image, not the object
-            with open(os.path.join(self.dataset_dir, 'object_id_to_image_id.csv'), 'r') as f:
-                for line_idx, line in enumerate(f.readlines()):
-                    if line_idx == 0:
-                        # skip headers
-                        continue
-                    object_id, image_id = line.strip().split(',')[:2]
-                    object_id, image_id = self.clean_csv_map_data(object_id), self.clean_csv_map_data(image_id)
-
-                    object_id_to_image_id[object_id] = image_id
 
         data = []
-        skipped_count = 0
+
         for img_path in img_paths:
             person_id, event_id = map(int, pattern.search(img_path).groups())
-
-            # make classes incrementing
-            try:
-                label_id = person_id if not real_mil else object_id_to_image_id[person_id]
-            except:
-                # if there is a problem with the person_id, just skip it
-                skipped_count += 1
-                continue
-            if label_id not in self.id_mapping:
-                self.id_mapping[label_id] = self.id_counter
+            if person_id not in self.id_mapping:
+                self.id_mapping[person_id] = self.id_counter
                 self.id_counter += 1
-            label = self.id_mapping[label_id]
+            label = self.id_mapping[person_id]
             data.append((img_path, label, event_id))
 
-        if self.real_mil:
-            print(f'Mil only, this is expected: Skipped {skipped_count} images due to missing object_id_to_image_id mapping')
         return data

@@ -24,11 +24,11 @@ sampler:
 train:
   project: 'performance_mil'
   max_epoch: 50
-  batch_size: 20
+  batch_size: 10
   lr: 0.0003
   lr_scheduler: 'cosine'
   seed: 4
-  bag_size: 10
+  bag_size: 5
 
 test:
   batch_size: 300
