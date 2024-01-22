@@ -92,6 +92,9 @@ class PerformancePhoto(ImageDataset):
         assert osp.exists(dataset_dir), 'dataset dir does not exist and must be manually prepared'
         return
 
+    def clean_csv_map_data(self, text):
+        return text.replace('"', '').replace("'", '').replace(' ', '').replace('\n', '').replace('\r', '')
+
     def process_dir(self, dir_path, real_mil=False):
         img_paths = glob.glob(osp.join(dir_path, '*.png'))
         # save the image. Format: person(cluster/label)ID_detectedObjectID_eventID.png
@@ -106,7 +109,9 @@ class PerformancePhoto(ImageDataset):
                         # skip headers
                         continue
                     object_id, image_id = line.strip().split(',')[:2]
-                    object_id_to_image_id[int(object_id.strip())] = int(image_id.strip())
+                    object_id, image_id = self.clean_csv_map_data(object_id), self.clean_csv_map_data(iamge_id)
+
+                    object_id_to_image_id[object_id] = image_id
 
         data = []
         for img_path in img_paths:
