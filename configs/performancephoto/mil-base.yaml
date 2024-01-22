@@ -11,13 +11,15 @@ data:
   save_dir: 'log/performancephoto_mil'
   transforms: ['random_flip', 'color_jitter', 'random_crop']
   workers: 4
-  performancephoto:
-    real_mil: True
+
+performancephoto:
+  real_mil: True
 
 sampler:
   train_sampler: 'RandomBagSampler'
 
 train:
+  project: 'performance_mil'
   max_epoch: 50
   batch_size: 20
   lr: 0.0003

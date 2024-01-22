@@ -21,5 +21,5 @@ singularity exec --nv /home/jtyo/containers/deep-person-reid.sif bash -c '
     export PYTHONPATH=/home/jtyo/Repos/deep-person-reid
 
     # Run script with given config
-    python scripts/CMIL_main.py --config configs/market/market1501mil_best_75_avg.yaml
+    python scripts/CMIL_main.py --config configs/SYSU/sysu30k-mil-continue.yaml
 '

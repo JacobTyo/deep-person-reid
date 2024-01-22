@@ -1,6 +1,7 @@
 model:
   name: 'osnet_x1_0_mil'
   pretrained: True
+  resume: '/home/jtyo/Repos/deep-person-reid/log/sysu30k/model/model.pth.tar-9'
 
 data:
   type: 'image'
