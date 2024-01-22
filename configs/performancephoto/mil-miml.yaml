@@ -44,7 +44,7 @@ test:
 loss:
   name: 'triplet'
   triplet:
-    weight_t: 1.0
+    weight_t: 0.0
     weight_x: 1.0
     weight_d: 0.0
     margin: 1.0

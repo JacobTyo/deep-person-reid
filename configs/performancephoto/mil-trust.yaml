@@ -1,5 +1,5 @@
 model:
-  name: 'osnet_x1_0_mil'
+  name: 'osnet_x1_0'
   pretrained: True
 
 data:
