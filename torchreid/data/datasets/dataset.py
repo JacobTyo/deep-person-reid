@@ -323,11 +323,7 @@ class ImageDataset(Dataset):
 
     def __getitem__(self, index):
         img_path, pid, camid, dsetid = self.data[index]
-        try:
-            img = read_image(img_path)
-        except IOError:
-            print(f'Too many errors trying to proceed, Image is just zeros for, pretty much undefined.')
-            img = torch.zeros((3, 256, 128))
+        img = read_image(img_path)
         if self.transform is not None:
             img = self._transform_image(self.transform, self.k_tfm, img)
         item = {

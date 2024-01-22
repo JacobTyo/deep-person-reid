@@ -25,6 +25,7 @@ class PerformancePhoto(ImageDataset):
     def __init__(self,
                  query_set='query_all',
                  gallery_set='gallery_all',
+                 real_mil=False,
                  endpoint='',
                  username='',
                  password='',
@@ -49,6 +50,7 @@ class PerformancePhoto(ImageDataset):
         )
 
         self.id_mapping = {}
+        self.photo_mapping = {}
         self.id_counter = 0
 
         # allow alternative directory structure
@@ -58,6 +60,7 @@ class PerformancePhoto(ImageDataset):
         # self.gallery_dir = osp.join(self.data_dir, 'bounding_box_test')
         self.query_dir = osp.join(self.data_dir, query_set)
         self.gallery_dir = osp.join(self.data_dir, gallery_set)
+        self.real_mil = real_mil
 
         required_files = [
             self.data_dir, self.train_dir, self.query_dir, self.gallery_dir
@@ -65,9 +68,9 @@ class PerformancePhoto(ImageDataset):
         self.check_before_run(required_files)
         # This needs fixed somehow - the query and test dirs are identical. That should not be the case.
         #   Query should be one this, and gallery another
-        train = self.process_dir(self.train_dir)
-        query = self.process_dir(self.query_dir)
-        gallery = self.process_dir(self.gallery_dir)
+        train = self.process_dir(self.train_dir, real_mil=self.real_mil)
+        query = self.process_dir(self.query_dir, real_mil=False)
+        gallery = self.process_dir(self.gallery_dir, real_mil=False)
 
         # can make this hard somehow? Different test sets? What about the eval I've done?
 
@@ -88,68 +91,30 @@ class PerformancePhoto(ImageDataset):
         print(f'dataset dir: {dataset_dir}')
         assert osp.exists(dataset_dir), 'dataset dir does not exist and must be manually prepared'
         return
-        # print('downloading dataset')
-        #
-        # s3 = boto3.client("s3",
-        #                   aws_access_key_id=aws_access_key_id,
-        #                   aws_secret_access_key=aws_secret_access_key,
-        #                   region_name=region_name)
-        #
-        # sql = """SELECT do.cluster_id,
-        #                 do.id,
-        #                 pa.event_id
-        #             FROM detected_objects do
-        #             JOIN images i ON do.image_id = i.id
-        #             JOIN photographer_albums pa ON i.photographer_album_id = pa.id
-        #             WHERE do.cluster_id IS NOT NULL
-        #        """
-        #
-        # with pymysql.connect(host=endpoint, user=username, password=password, database=database_name) as connection:
-        #     with connection.cursor() as cursor:
-        #         cursor.execute(sql)
-        #         rows = cursor.fetchall()
-        #
-        # cluster_ids = [row[0] for row in rows]
-        # unique_cluster_ids = list(set(cluster_ids))
-        # # calculate index for 20% split
-        # split_index = int(len(unique_cluster_ids) * 0.2)
-        # cluster_ids_20 = unique_cluster_ids[:split_index]
-        #
-        # os.makedirs(dataset_dir, exist_ok=True)
-        # os.makedirs(os.path.join(dataset_dir, 'bounding_box_train'), exist_ok=True)
-        # os.makedirs(os.path.join(dataset_dir, 'bounding_box_test'), exist_ok=True)
-        # os.makedirs(os.path.join(dataset_dir, 'query'), exist_ok=True)
-        #
-        # inc_camera_id = 0
-        # for row in tqdm(rows):
-        #     # get the image
-        #     response = s3.get_object(Bucket=s3_bucket, Key=f'{row[1]}.png')['Body']
-        #     # save the image. Format: person(cluster/label)ID_detectedObjectID_eventID.png
-        #     # this has to be updated such that eventID is actually a cameraID
-        #     if row[0] in cluster_ids_20:
-        #         with open(os.path.join(dataset_dir, 'query', f'{row[0]}_{row[1]}_{inc_camera_id}.png'), 'wb') as out_file:
-        #             shutil.copyfileobj(response, out_file)
-        #         inc_camera_id += 1
-        #     else:
-        #         with open(os.path.join(dataset_dir, 'bounding_box_train', f'{row[0]}_{row[1]}_{inc_camera_id}.png'), 'wb') as out_file:
-        #             shutil.copyfileobj(response, out_file)
-        #         inc_camera_id += 1
-        #
-        # files_to_copy = os.listdir(os.path.join(dataset_dir, 'query'))
-        # for file in files_to_copy:
-        #     shutil.copy(os.path.join(dataset_dir, 'query', file), os.path.join(dataset_dir, 'bounding_box_test', file))
 
-
-    def process_dir(self, dir_path):
+    def process_dir(self, dir_path, real_mil=False):
         img_paths = glob.glob(osp.join(dir_path, '*.png'))
         # save the image. Format: person(cluster/label)ID_detectedObjectID_eventID.png
         pattern = re.compile(r'([-\d]+)_[-\d]+_([-\d]+).png')
+        object_id_to_image_id = {}
+
+        if real_mil:
+            # load the object_id_to_image_id.csv file, and label with respect to the image, not the object
+            with open(os.path.join(self.dataset_dir, 'object_id_to_image_id.csv'), 'r') as f:
+                for line in f.readlines():
+                    object_id, image_id = line.strip().split(',')[:2]
+                    object_id_to_image_id[object_id] = image_id
 
         data = []
         for img_path in img_paths:
             person_id, event_id = map(int, pattern.search(img_path).groups())
-            if person_id not in self.id_mapping:
-                self.id_mapping[person_id] = self.id_counter
+
+            # make classes incrementing
+            label_id = person_id if not real_mil else object_id_to_image_id[person_id]
+            if label_id not in self.id_mapping:
+                self.id_mapping[label_id] = self.id_counter
                 self.id_counter += 1
-            data.append((img_path, self.id_mapping[person_id], event_id))
+            label = self.id_mapping[label_id]
+            data.append((img_path, label, event_id))
+
         return data

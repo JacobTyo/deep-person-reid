@@ -118,12 +118,8 @@ def read_image(path):
                 .format(path)
             )
             num_errors += 1
-            if num_errors > 50:
-                raise IOError(
-                    'Failed to read "{}" after {} retries.'.format(
-                        path, num_errors
-                    )
-                )
+            if num_errors > 5:
+                return Image.new('RGB', (128, 256), 'black')
     return img
 
 
