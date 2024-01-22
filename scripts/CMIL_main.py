@@ -37,7 +37,7 @@ def build_engine(cfg, datamanager, model, optimizer, scheduler):
             )
 
         else:
-            if 'mil' in cfg.data.sources[0] or 'sysu30k' in cfg.data.sources:
+            if 'mil' in cfg.data.sources[0] or 'sysu30k' in cfg.data.sources or 'mil' in cfg.model.name:
                 print('-------------------------Using MIL Engine-------------------------')
                 engine = torchreid.engine.ImageMilTripletEngine(
                     datamanager,
