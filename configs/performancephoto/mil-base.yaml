@@ -15,6 +15,9 @@ data:
 performancephoto:
   real_mil: True
 
+cuhk03:
+  use_metric_cuhk03: True
+
 sampler:
   train_sampler: 'RandomBagSampler'
 
