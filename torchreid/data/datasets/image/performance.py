@@ -120,7 +120,6 @@ class PerformancePhoto(ImageDataset):
             # make classes incrementing
             print(f'person_id: {person_id}')
             print(type(person_id))
-            print(list(object_id_to_image_id.keys()))
             label_id = person_id if not real_mil else object_id_to_image_id[person_id]
             if label_id not in self.id_mapping:
                 self.id_mapping[label_id] = self.id_counter
