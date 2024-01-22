@@ -93,7 +93,7 @@ class PerformancePhoto(ImageDataset):
         return
 
     def clean_csv_map_data(self, text):
-        return int(text.replace('"', '').replace("'", '').replace(' ', '').replace('\n', '').replace('\r', ''))
+        return re.findall(r'\d+', text)
 
     def process_dir(self, dir_path, real_mil=False):
         img_paths = glob.glob(osp.join(dir_path, '*.png'))
