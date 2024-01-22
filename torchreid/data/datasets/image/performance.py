@@ -118,6 +118,10 @@ class PerformancePhoto(ImageDataset):
             person_id, event_id = map(int, pattern.search(img_path).groups())
 
             # make classes incrementing
+            print(f'person_id: {person_id}')
+            for k, v in object_id_to_image_id.items():
+                print(f'k: {k}, v: {v}')
+                break
             label_id = person_id if not real_mil else object_id_to_image_id[person_id]
             if label_id not in self.id_mapping:
                 self.id_mapping[label_id] = self.id_counter
