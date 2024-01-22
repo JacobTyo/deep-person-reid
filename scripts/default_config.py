@@ -38,9 +38,12 @@ def get_default_config():
     cfg.cuhk03.labeled_images = False # use labeled images, if False, use detected images
     cfg.cuhk03.classic_split = False # use classic split by Li et al. CVPR14
     cfg.cuhk03.use_metric_cuhk03 = False # use cuhk03's metric for evaluation
+
+    # Performance photo
     cfg.performancephoto = CN()
     cfg.performancephoto.gallery_set = 'gallery_all'
     cfg.performancephoto.query_set = 'query_all'
+    cfg.performancephoto.real_mil = False # use real MIL labels
 
     # sampler
     cfg.sampler = CN()
@@ -148,7 +151,8 @@ def imagedata_kwargs(cfg):
         # performance photo specific
         'query_set': cfg.performancephoto.query_set,
         'gallery_set': cfg.performancephoto.gallery_set,
-        'duplicates': cfg.data.mil_duplicates
+        'duplicates': cfg.data.mil_duplicates,
+        'real_mil': cfg.performancephoto.real_mil
     }
 
 

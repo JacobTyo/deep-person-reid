@@ -179,7 +179,8 @@ class ImageDataManager(DataManager):
             bag_size=None,
             query_set=None,
             gallery_set=None,
-            duplicates=None
+            duplicates=None,
+            real_mil=None
     ):
 
         super(ImageDataManager, self).__init__(
@@ -209,7 +210,8 @@ class ImageDataManager(DataManager):
                 market1501_500k=market1501_500k,
                 query_set=query_set,
                 gallery_set=gallery_set,
-                duplicates=duplicates
+                duplicates=duplicates,
+                real_mil=real_mil
             )
             trainset.append(trainset_)
         trainset = sum(trainset)
