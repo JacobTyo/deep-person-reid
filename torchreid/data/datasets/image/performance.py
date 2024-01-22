@@ -103,7 +103,7 @@ class PerformancePhoto(ImageDataset):
             with open(os.path.join(self.dataset_dir, 'object_id_to_image_id.csv'), 'r') as f:
                 for line in f.readlines():
                     object_id, image_id = line.strip().split(',')[:2]
-                    object_id_to_image_id[object_id] = image_id
+                    object_id_to_image_id[int(object_id.strip())] = int(image_id.strip())
 
         data = []
         for img_path in img_paths:
