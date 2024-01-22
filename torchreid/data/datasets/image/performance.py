@@ -101,7 +101,10 @@ class PerformancePhoto(ImageDataset):
         if real_mil:
             # load the object_id_to_image_id.csv file, and label with respect to the image, not the object
             with open(os.path.join(self.dataset_dir, 'object_id_to_image_id.csv'), 'r') as f:
-                for line in f.readlines():
+                for line_idx, line in enumerate(f.readlines()):
+                    if line_idx == 0:
+                        # skip headers
+                        continue
                     object_id, image_id = line.strip().split(',')[:2]
                     object_id_to_image_id[int(object_id.strip())] = int(image_id.strip())
 
