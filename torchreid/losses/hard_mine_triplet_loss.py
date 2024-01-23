@@ -40,8 +40,11 @@ class TripletLoss(nn.Module):
         dist_ap, dist_an = [], []
         for i in range(n):
             dist_ap.append(dist[i][mask[i]].max().unsqueeze(0))
-            print(dist[i][mask[i] == 0].shape)
-            dist_an.append(dist[i][mask[i] == 0].min().unsqueeze(0))
+            try:
+                dist_an.append(dist[i][mask[i] == 0].min().unsqueeze(0))
+            except RuntimeError:
+                # if there is no negative for this anchor, just add one set to the margin
+                dist_an.append(torch.zeros_like(dist[i][mask[i]].max().unsqueeze(0)) + self.margin)
         dist_ap = torch.cat(dist_ap)
         dist_an = torch.cat(dist_an)
 

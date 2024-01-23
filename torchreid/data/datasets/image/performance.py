@@ -156,6 +156,7 @@ class PerformancePhoto(ImageDataset):
 
         # great, now the normal data is dealt with, but we do not have the extra MIL data.
         img_paths = glob.glob(osp.join(mil_extra_data_path, '*.png'))
+        assert len(img_paths) > 100, 'The required MIL data was not found'
         pattern = re.compile(r'([-\d]+).png')
         for img_path in img_paths:
             obj_id = map(int, pattern.search(img_path).groups())
