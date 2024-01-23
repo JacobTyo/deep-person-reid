@@ -1,10 +1,10 @@
-program: scripts/main.py
-name: PerPh-sweep
-description: 'What works best on performancephoto?'
-project: PerPh-sweep
+program: scripts/CMIL_main.py
+name: PerPh-Mil-sweep
+description: 'CMIL method on performancephoto'
+project: PerPh-Mil-sweep
 method: bayes
 metric:
-  name: 'Test/PerPh-sweep/rank1'
+  name: 'Test/performancephoto/rank1'
   goal: maximize
 parameters:
   lr:
@@ -31,27 +31,20 @@ parameters:
     distribution: uniform
     min: 0
     max: 1.0
+  weight_d:
+    values: [ 0.0, 0.01, 0.1 ]
   margin:
     distribution: uniform
     min: 0.1
     max: 1.0
+  bag_size:
+    distribution: int_uniform
+    min: 5
+    max: 10
   batch_size:
     distribution: int_uniform
-    min: 20
-    max: 100
-  model_name:
-    values: [ 'osnet_x1_0',
-              'osnet_ain_x1_0',
-              'resnet50' ,
-              'shufflenet',
-              'squeezenet1_0',
-              'shufflenet_v2_x1_0',
-              'mudeep',
-              'resnet50mid',
-              'hacnn',
-              'pcb_p6',
-              'mlfn',
-    ]
+    min: 5
+    max: 10
 early_terminate:
   type: hyperband
   min_iter: 3
@@ -61,5 +54,5 @@ command:
   - ${interpreter}
   - ${program}
   - "--config-file"
-  - "configs/market1501mil_base_sweep.yaml"
+  - "configs/performancephoto/mil-base.yaml"
   - ${args}
