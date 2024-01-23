@@ -158,8 +158,10 @@ class PerformancePhoto(ImageDataset):
         img_paths = glob.glob(osp.join(mil_extra_data_path, '*.png'))
         assert len(img_paths) > 100, 'The required MIL data was not found'
         pattern = re.compile(r'([-\d]+).png')
+        added = 0
+        print('adding extra images')
         for img_path in img_paths:
-            obj_id = map(int, pattern.search(img_path).groups())
+            obj_id = next(map(int, pattern.search(img_path).groups()))
             # now add it to the dataset properly
             # first, get the image_id of the object
             image_id = objectid2imageid[obj_id]
@@ -172,6 +174,9 @@ class PerformancePhoto(ImageDataset):
                 # finally, the label
                 label = bag_id_map[bid]
                 data.append((img_path, label, 0))
+                added += 1
+
+        print(f'added {added} images to the dataset')
 
         return data
 
