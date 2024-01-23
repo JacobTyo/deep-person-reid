@@ -99,6 +99,7 @@ class PerformancePhoto(ImageDataset):
         return int(re.findall(r'\d+', text)[0])
 
     def process_dir_MIL(self, dir_path, mil_extra_data_path=None):
+        print("Loading dataset for MIL learning.")
         # first build the relationships we'll need to make the dataset
         # each object only has one image
         objectid2imageid = defaultdict(int)
@@ -149,12 +150,29 @@ class PerformancePhoto(ImageDataset):
                     if bag_id not in bag_id_map:
                         bag_id_map[bag_id] = len(bag_id_map)
                     label = bag_id_map[bag_id]
-                    data.append((objectid2imgpath[object_id], label, 0))
+                    if object_id in objectid2imgpath:
+                        # Many id's won't be in this dict, because they are in the other folder path
+                        data.append((objectid2imgpath[object_id], label, 0))
 
-        # great, now the normal data is dealt with, but we do not have the extra MIL data. How do we work it in?
-        # TODO
-        raise NotImplementedError('MIL loading not done')
+        # great, now the normal data is dealt with, but we do not have the extra MIL data.
+        img_paths = glob.glob(osp.join(mil_extra_data_path, '*.png'))
+        pattern = re.compile(r'([-\d]+).png')
+        for img_path in img_paths:
+            obj_id = map(int, pattern.search(img_path).groups())
+            # now add it to the dataset properly
+            # first, get the image_id of the object
+            image_id = objectid2imageid[obj_id]
+            # now get the bag id's from the image id
+            bag_id = imageids2bagids[image_id]
+            for bid in bag_id:
+                # if bid not in bag_id_map:
+                #     bag_id_map[bid] = len(bag_id_map)
+                # bag_id = bid
+                # finally, the label
+                label = bag_id_map[bid]
+                data.append((img_path, label, 0))
 
+        return data
 
     def process_dir(self, dir_path, mil_extra_data_path=None):
         if mil_extra_data_path:
