@@ -18,9 +18,6 @@ performancephoto:
 cuhk03:
   use_metric_cuhk03: True
 
-sampler:
-  train_sampler: 'RandomBagSampler'
-
 train:
   project: 'performance_mil'
   max_epoch: 50
