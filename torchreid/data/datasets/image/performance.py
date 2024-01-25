@@ -6,7 +6,7 @@ import os
 import shutil
 from collections import defaultdict
 
-from tqdm import tqdm
+from statistics import median
 from ..dataset import ImageDataset
 
 
@@ -176,7 +176,23 @@ class PerformancePhoto(ImageDataset):
                 data.append((img_path, label, 0))
                 added += 1
 
-        print(f'added {added} images to the dataset')
+        # now I need to get some statistics on the bags
+        # first, get the number of images per bag
+        bag_sizes = []
+        for bag_id, image_ids in bagids2imageids.items():
+            bag_sizes.append(len(image_ids))
+        # now get the number of bags per image
+        image_sizes = []
+        for image_id, bag_ids in imageids2bagids.items():
+            image_sizes.append(len(bag_ids))
+        # now get the number of objects per bag
+        objects_per_bag = []
+        for bag_id, object_ids in bagids2objectids.items():
+            objects_per_bag.append(len(object_ids))
+        # now get the number of bags per object
+        bags_per_object = []
+        for object_id, bag_ids in objectids2bagids.items():
+            bags_per_object.append(len(bag_ids))
 
         return data
 
