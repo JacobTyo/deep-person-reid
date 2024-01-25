@@ -43,8 +43,8 @@ class ResNetMid_mil(ResNetMid):
                                         loss,
                                         block,
                                         layers,
-                                        last_stride=2,
-                                        fc_dims=None,
+                                        last_stride=last_stride,
+                                        fc_dims=fc_dims,
                                         **kwargs)
         self.single_batch_attn_size = self.feature_dim
         if acc_fn == 'set_transformer':
