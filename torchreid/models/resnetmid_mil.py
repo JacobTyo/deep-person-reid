@@ -39,7 +39,7 @@ class ResNetMid_mil(ResNetMid):
             acc_fn='set_transformer',
             **kwargs
     ):
-        super(ResNetMid, self).__init__(num_classes,
+        super(ResNetMid_mil, self).__init__(num_classes,
                                         loss,
                                         block,
                                         layers,
