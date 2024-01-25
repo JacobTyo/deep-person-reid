@@ -1,5 +1,5 @@
 model:
-  name: 'osnet_x1_0_mil'
+  name: 'resnet50mid_mil'
   pretrained: True
 
 data:
@@ -18,7 +18,7 @@ sampler:
   train_sampler: 'RandomBagSampler'
 
 train:
-  project: 'sysu30k-sweep'
+  project: 'sysu30k'
   optim: 'amsgrad'
   lr: 0.000212
   max_epoch: 20

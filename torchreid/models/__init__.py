@@ -5,6 +5,7 @@ from .pcb import *
 from .mlfn import *
 from .hacnn import *
 from .osnet import *
+from .resnetmid_mil import *
 from .senet import *
 from .mudeep import *
 from .nasnet import *
@@ -64,6 +65,7 @@ __model_factory = {
     # reid-specific models
     'mudeep': MuDeep,
     'resnet50mid': resnet50mid,
+    'resnet50mid_mil': resnet50mid_mil,
     'hacnn': HACNN,
     'pcb_p6': pcb_p6,
     'pcb_p4': pcb_p4,
