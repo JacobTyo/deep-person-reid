@@ -23,7 +23,7 @@ sampler:
 
 train:
   project: 'PerformancePhoto-Best'
-  max_epoch: 50
+  max_epoch: 250
   batch_size: 5
   lr: 0.0004043699870995427
   lr_scheduler: 'cosine'
