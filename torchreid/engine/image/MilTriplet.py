@@ -160,10 +160,10 @@ class ImageMilTripletEngine(Engine):
         loss_summary['loss_x'] = loss_x.item()
         loss_summary['acc'] = metrics.accuracy(outputs, pids)[0].item()
 
+        loss_d = self.criterion_d(bag_features, grouped_bag_features)
         if self.weight_d > 0:
-            loss_d = self.criterion_d(bag_features, grouped_bag_features)
             loss += self.weight_d * loss_d
-            loss_summary['loss_d'] = loss_d.item()
+        loss_summary['loss_d'] = loss_d.item()
 
         assert loss_summary
 
