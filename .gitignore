@@ -143,3 +143,9 @@ debug*
 *.sif
 *.sif.zip
 wandb/
+
+# notebooks
+notebooks/
+
+# zips
+CMIL.zip

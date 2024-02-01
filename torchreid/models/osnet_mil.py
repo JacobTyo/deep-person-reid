@@ -36,6 +36,9 @@ class OSNetMil(OSNet):
         elif acc_fn == 'avg':
             # Use the average bag representation
             self.attention = lambda x: torch.mean(x, dim=1)
+        elif acc_fn == 'sum':
+            # Use the sum of the bag representation
+            self.attention = lambda x: torch.sum(x, dim=1)
         else:
             raise NotImplementedError(f'Accumulation function {acc_fn} not implemented.')
 
