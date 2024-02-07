@@ -11,7 +11,7 @@ data:
   width: 128
   combineall: False
   transforms: ['random_flip']
-  save_dir: 'log/sysu30k-smallbag'
+  save_dir: 'log/sysu30k-resnet'
   workers: 4
 
 sampler:
@@ -22,11 +22,11 @@ train:
   optim: 'amsgrad'
   lr: 0.000212
   max_epoch: 20
-  batch_size: 20
+  batch_size: 10
   fixbase_epoch: 3
-  open_layers: ['classifier', 'bag_classifier', 'attention', 'fc']
+  open_layers: ['classifier', 'bag_classifier', 'attention', 'fc_fusion']
   lr_scheduler: 'one_cycle'
-  bag_size: 10
+  bag_size: 5
 
 test:
   batch_size: 300

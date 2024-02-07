@@ -1,7 +1,7 @@
 model:
   name: 'osnet_x1_0_mil'
   pretrained: True
-  acc_fn: 'avg'
+  acc_fn: 'sum'
 
 data:
   type: 'image'
@@ -11,7 +11,7 @@ data:
   width: 128
   combineall: False
   transforms: ['random_flip']
-  save_dir: 'log/market1501mil_best_hp'
+  save_dir: 'log/market1501mil_best_sum'
   mil_duplicates: 3
 
 sampler:

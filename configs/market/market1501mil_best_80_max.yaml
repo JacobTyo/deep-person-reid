@@ -1,7 +1,7 @@
 model:
   name: 'osnet_x1_0_mil'
   pretrained: True
-  acc_fn: 'avg'
+  acc_fn: 'max'
 
 data:
   type: 'image'
@@ -11,8 +11,8 @@ data:
   width: 128
   combineall: False
   transforms: ['random_flip']
-  save_dir: 'log/market1501mil_best_hp'
-  mil_duplicates: 3
+  save_dir: 'log/market1501mil_best_80'
+  mil_duplicates: 4 
 
 sampler:
   train_sampler: 'RandomBagSampler'
@@ -26,7 +26,7 @@ loss:
     margin: 0.9992281233519684
 
 train:
-  project: 'market1501_best_75'
+  project: 'market1501_best_80'
   optim: 'amsgrad'
   lr: 0.00021145102244686487
   max_epoch: 250

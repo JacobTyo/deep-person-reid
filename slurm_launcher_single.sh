@@ -9,7 +9,7 @@
 
 module load singularity
 
-singularity exec --nv /home/jtyo/containers/deep-person-reid.sif bash -c '
+singularity exec --nv /home/jtyo/containers/deep-person-reid-l2l.sif bash -c '
     # Load conda and activate the environment
     . /opt/conda/etc/profile.d/conda.sh
     conda activate base
@@ -21,5 +21,5 @@ singularity exec --nv /home/jtyo/containers/deep-person-reid.sif bash -c '
     export PYTHONPATH=/home/jtyo/Repos/deep-person-reid
 
     # Run script with given config
-    python scripts/CMIL_main.py --config configs/SYSU/sysu30k-mil-continue.yaml
+    python scripts/CMIL_main.py --config configs/learn_hnm/market1501-1.yaml
 '

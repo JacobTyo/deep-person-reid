@@ -1,7 +1,7 @@
 model:
   name: 'osnet_x1_0_mil'
   pretrained: True
-  acc_fn: 'avg' 
+  acc_fn: 'sum' 
 
 data:
   sources: ['performancephoto']
