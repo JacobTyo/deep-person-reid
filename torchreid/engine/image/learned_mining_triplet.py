@@ -161,10 +161,10 @@ class ImageTripletEngineLearnedMining(Engine):
 
                 loss_summary['val_loss'] = loss.item()
 
-
                 loss.backward()
                 self.acc_optim.step()
                 self.acc_optim.zero_grad()
+                self.optimizer.zero_grad()
 
                 # and reuse the data to update the model
                 outputs, features = self.model(imgs)
@@ -176,9 +176,9 @@ class ImageTripletEngineLearnedMining(Engine):
                 loss, _ = torch.sort(loss, descending=True)
                 loss = self.acc_fn(loss)
                 loss_summary['learned_loss'] = loss.item()
-                self.optimizer.zero_grad()
                 loss.backward()
                 self.optimizer.step()
+                self.optimizer.zero_grad()
             else:
                 loss = self.per_sample_loss_fn(outputs, pids)
 
