@@ -146,6 +146,7 @@ class ImageTripletEngineLearnedMining(Engine):
         else:
             if self.inner_step_counter == 0:
                 self.learner = self.model.clone()
+                self.acc_optim.zero_grad()
 
             outputs, features = self.learner(imgs)
 
@@ -160,13 +161,18 @@ class ImageTripletEngineLearnedMining(Engine):
 
                 loss_summary['val_loss'] = loss.item()
 
-                self.acc_optim.zero_grad()
+
                 loss.backward()
                 self.acc_optim.step()
+                self.acc_optim.zero_grad()
 
                 # and reuse the data to update the model
                 outputs, features = self.model(imgs)
                 loss = self.per_sample_loss_fn(outputs, pids)
+                # instead of sort, we need to apply everything to an even simpler accumulator
+                # the accumulator must operate only on a batch of data sorted by identity?
+                # should we say "oh for these triplets, originating from the same class, you should do  x"?
+                # no maybe not, that doesn't make sense for tripelts.
                 loss, _ = torch.sort(loss, descending=True)
                 loss = self.acc_fn(loss)
                 loss_summary['learned_loss'] = loss.item()
