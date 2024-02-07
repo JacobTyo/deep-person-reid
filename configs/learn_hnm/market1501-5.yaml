@@ -3,7 +3,7 @@ model:
   pretrained: True
   learn_mining_fn: True
   learn_mining_inner_steps: 5
-  learn_mining_first_order_approx: False
+  learn_mining_first_order_approx: True
 
 data:
   type: 'image'
@@ -37,6 +37,7 @@ train:
   open_layers: ['classifier']
   lr_scheduler: 'cosine'
   bag_size: None
+  acc_lr: 0.001
 
 test:
   batch_size: 300
