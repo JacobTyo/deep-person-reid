@@ -2,8 +2,8 @@ model:
   name: 'osnet_x1_0'
   pretrained: True
   learn_mining_fn: True
-  learn_mining_inner_steps: 5
-  learn_mining_first_order_approx: False
+  learn_mining_inner_steps: 10
+  learn_mining_first_order_approx: True
 
 data:
   type: 'image'
