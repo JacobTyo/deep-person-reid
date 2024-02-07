@@ -37,6 +37,7 @@ train:
   open_layers: ['classifier']
   lr_scheduler: 'cosine'
   bag_size: None
+  acc_lr: 0.0001
 
 test:
   batch_size: 300
