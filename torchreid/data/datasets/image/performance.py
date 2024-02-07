@@ -154,6 +154,13 @@ class PerformancePhoto(ImageDataset):
                         # Many id's won't be in this dict, because they are in the other folder path
                         data.append((objectid2imgpath[object_id], label, 0))
 
+        # for each label, get the number of data opints for it
+        pre_mil_label_counts = {}
+        for d in data:
+            if d[1] not in pre_mil_label_counts:
+                pre_mil_label_counts[d[1]] = 0
+            pre_mil_label_counts[d[1]] += 1
+
         # great, now the normal data is dealt with, but we do not have the extra MIL data.
         img_paths = glob.glob(osp.join(mil_extra_data_path, '*.png'))
         assert len(img_paths) > 100, 'The required MIL data was not found'
@@ -193,6 +200,45 @@ class PerformancePhoto(ImageDataset):
         bags_per_object = []
         for object_id, bag_ids in objectids2bagids.items():
             bags_per_object.append(len(bag_ids))
+
+        post_mil_label_counts = {}
+        for d in data:
+            if d[1] not in post_mil_label_counts:
+                post_mil_label_counts[d[1]] = 0
+            post_mil_label_counts[d[1]] += 1
+
+        # now print the pre post mil data differences
+        print('Pre MIL crops per label')
+        print(f'Average: {sum(pre_mil_label_counts.values()) / len(pre_mil_label_counts)}')
+        print(f'Median: {median(pre_mil_label_counts.values())}')
+        print(f'Min: {min(pre_mil_label_counts.values())}')
+        print(f'Max: {max(pre_mil_label_counts.values())}')
+        print('Post MIL crops per label')
+        print(f'Average: {sum(post_mil_label_counts.values()) / len(post_mil_label_counts)}')
+        print(f'Median: {median(post_mil_label_counts.values())}')
+        print(f'Min: {min(post_mil_label_counts.values())}')
+        print(f'Max: {max(post_mil_label_counts.values())}')
+        print('Difference between Pre and Post MIL')
+        print(f'Average: {sum(post_mil_label_counts.values()) / len(post_mil_label_counts) - sum(pre_mil_label_counts.values()) / len(pre_mil_label_counts)}')
+        print(f'Median: {median(post_mil_label_counts.values()) - median(pre_mil_label_counts.values())}')
+        print(f'Min: {min(post_mil_label_counts.values()) - min(pre_mil_label_counts.values())}')
+        print(f'Max: {max(post_mil_label_counts.values()) - max(pre_mil_label_counts.values())}')
+
+        # now print the max and min noise level for the bags, based on the pre and post mil data
+        signal_levels = [pre_mil_label_counts[x]/(pre_mil_label_counts[x]+post_mil_label_counts[x]) for x in pre_mil_label_counts.keys()]
+        noise_levels = [post_mil_label_counts[x]/(pre_mil_label_counts[x]+post_mil_label_counts[x]) for x in pre_mil_label_counts.keys()]
+        print('Noise level for bags')
+        print(f'Max: {max(noise_levels)}')
+        print(f'Min: {min(noise_levels)}')
+        print(f'Avg: {sum(noise_levels) / len(noise_levels)}')
+        print(f'Median: {median(noise_levels)}')
+        print('Signal level for bags')
+        print(f'Max: {max(signal_levels)}')
+        print(f'Min: {min(signal_levels)}')
+        print(f'Avg: {sum(signal_levels) / len(signal_levels)}')
+        print(f'Median: {median(signal_levels)}')
+
+        exit(0)
 
         return data
 

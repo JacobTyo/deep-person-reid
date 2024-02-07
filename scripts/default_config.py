@@ -11,6 +11,10 @@ def get_default_config():
     cfg.model.load_weights = '' # path to model weights
     cfg.model.resume = '' # path to checkpoint for resume training
     cfg.model.acc_fn = 'set_transformer' # accumulation function for MIL
+    cfg.model.learn_mining_fn = False # use learned mining function
+    cfg.model.learn_mining_inner_steps = 5 # how many inner steps to train the mining function
+    cfg.model.learn_mining_first_order_approx = True # use first order gradient approximation for bi-level learning
+    cfg.model.learn_mining_inner_learning_rate = 0.0005
 
     # data
     cfg.data = CN()
@@ -81,6 +85,7 @@ def get_default_config():
     cfg.train.gamma = 0.1 # learning rate decay multiplier
     cfg.train.print_freq = 20 # print frequency
     cfg.train.seed = 1 # random seed
+    cfg.train.acc_lr = 0.01 # learning rate for accumulator
 
     # optimizer
     cfg.sgd = CN()

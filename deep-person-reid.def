@@ -32,7 +32,7 @@ From: pytorch/pytorch:2.1.0-cuda11.8-cudnn8-runtime
         libgdk-pixbuf2.0-0 \
         libcurl4-openssl-dev
     apt-get -y install tmux wget curl ca-certificates git sudo ninja-build libgl1-mesa-glx
-    pip install numpy cython h5py Pillow six scipy opencv-python matplotlib tb-nightly future yacs gdown flake8 yapf isort==4.3.21 imageio chardet wandb setuptools
+    pip install numpy cython h5py Pillow six scipy opencv-python matplotlib tb-nightly future yacs gdown flake8 yapf isort==4.3.21 imageio chardet wandb setuptools learn2learn
 
 
 %labels

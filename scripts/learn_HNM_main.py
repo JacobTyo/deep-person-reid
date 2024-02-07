@@ -5,7 +5,11 @@ import argparse
 import torch
 import torch.nn as nn
 
+
+
 import torchreid
+from torchreid.losses import TripletLoss
+from torchreid.models import ConvexAccumulator
 from torchreid.utils import (
     Logger, check_isfile, set_random_seed, collect_env_info,
     resume_from_checkpoint, load_pretrained_weights, compute_model_complexity
@@ -52,8 +56,20 @@ def build_engine(cfg, datamanager, model, optimizer, scheduler):
                     label_smooth=cfg.loss.softmax.label_smooth,
                     bag_size=cfg.train.bag_size,
                 )
-            elif cfg.data.learnable_accumulator:
+            elif cfg.model.learn_mining_fn:
                 print('-------------------------Using Learned Mining Engine-------------------------')
+                # for now can build the accumulation information statically
+                accumulator_fn = ConvexAccumulator(batch_size=cfg.train.batch_size)
+                accumulator_fn.to(torch.device('cuda'))
+                accumulator_optimizer = torch.optim.Adam(accumulator_fn.parameters(), lr=cfg.train.acc_lr)
+                inner_steps = cfg.model.learn_mining_inner_steps
+                first_order_approx = cfg.model.learn_mining_first_order_approx
+                inner_learning_rate = cfg.model.learn_mining_inner_learning_rate
+
+                per_sample_loss_fn = TripletLoss(reduction='none')
+                # just use the mean for val risk function for now
+                val_risk_function = TripletLoss(reduction='mean')
+
                 engine = torchreid.engine.ImageTripletEngineLearnedMining(
                     datamanager,
                     model,
@@ -63,7 +79,15 @@ def build_engine(cfg, datamanager, model, optimizer, scheduler):
                     weight_x=cfg.loss.triplet.weight_x,
                     scheduler=scheduler,
                     use_gpu=cfg.use_gpu,
-                    label_smooth=cfg.loss.softmax.label_smooth
+                    label_smooth=cfg.loss.softmax.label_smooth,
+                    accumulator_fn=accumulator_fn,
+                    accumulator_optimizer=accumulator_optimizer,
+                    accumulator_lr=cfg.train.acc_lr,
+                    inner_steps=inner_steps,
+                    first_order_approx=first_order_approx,
+                    inner_learning_rate=inner_learning_rate,
+                    per_sample_loss_fn=per_sample_loss_fn,
+                    val_risk_function=val_risk_function
                 )
             else:
                 engine = torchreid.engine.ImageTripletEngine(

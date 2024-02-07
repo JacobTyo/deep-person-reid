@@ -15,10 +15,10 @@ class TripletLoss(nn.Module):
         margin (float, optional): margin for triplet. Default is 0.3.
     """
 
-    def __init__(self, margin=0.3):
+    def __init__(self, margin=0.3, reduction='mean'):
         super(TripletLoss, self).__init__()
         self.margin = margin
-        self.ranking_loss = nn.MarginRankingLoss(margin=margin)
+        self.ranking_loss = nn.MarginRankingLoss(margin=margin, reduction=reduction)
 
     def forward(self, inputs, targets):
         """
