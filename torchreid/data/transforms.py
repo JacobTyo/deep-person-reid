@@ -422,7 +422,7 @@ def build_transforms(
 
     if 'random_speckles' in transforms:
         print('+ random speckles')
-        transform_tr += [RandomSpeckles(prob_happen=1.0,
+        transform_tr += [RandomSpeckles(prob_happen=0.5,
                                         pool_capacity=50000,
                                         min_sample_size=10,
                                         max_num_pathces=75,
