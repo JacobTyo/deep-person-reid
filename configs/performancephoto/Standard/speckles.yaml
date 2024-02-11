@@ -1,0 +1,53 @@
+model:
+  name: 'osnet_x1_0'
+  pretrained: True
+
+data:
+  sources: ['performancephoto']
+  targets: ['performancephoto']
+  height: 256
+  width: 128
+  combineall: False
+  save_dir: 'log/performancephoto-base'
+  transforms: ['random_flip', 'color_jitter', 'random_crop', 'random_speckles']
+  workers: 4
+
+performancephoto:
+  real_mil: False
+
+cuhk03:
+  use_metric_cuhk03: True
+
+sampler:
+  train_sampler: 'RandomIdentitySampler'
+  num_instances: 4
+
+train:
+  project: 'performance-speckles'
+  max_epoch: 250
+  batch_size: 10
+  lr: 0.0003
+  lr_scheduler: 'cosine'
+  seed: 4
+  bag_size: None
+  fixbase_epoch: 1
+  open_layers: [ 'classifier', 'bag_classifier', 'attention', 'fc']
+
+test:
+  batch_size: 300
+  eval_freq: 4
+  evaluate: False
+  ranks: [1, 5, 10]
+  visrank: False
+  visrank_topk: 10
+  rerank: False
+  normalize_feature: False
+  dist_metric: 'euclidean'
+
+loss:
+  name: 'triplet'
+  triplet:
+    weight_t: 1.0
+    weight_x: 1.0
+    weight_d: 0.0
+    margin: 1.0
