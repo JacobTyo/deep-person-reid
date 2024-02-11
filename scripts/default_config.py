@@ -34,6 +34,7 @@ def get_default_config():
     cfg.data.save_dir = 'log' # path to save log
     cfg.data.load_train_targets = False # load training set from target dataset
     cfg.data.mil_duplicates = 3 # number of times to duplicate an image in a bag with a incorrect label
+    cfg.data.learnable_accumulator = False
 
     # specific datasets
     cfg.market1501 = CN()
