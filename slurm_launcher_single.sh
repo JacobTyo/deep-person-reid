@@ -21,5 +21,5 @@ singularity exec --nv /home/jtyo/containers/deep-person-reid-l2l.sif bash -c '
     export PYTHONPATH=/home/jtyo/Repos/deep-person-reid
 
     # Run script with given config
-    python scripts/learn_HNM_main.py --config configs/learn_hnm/market1501-10.yaml
+    python scripts/CMIL_main.py --config configs/performancephoto/Standard/base.yaml
 '
