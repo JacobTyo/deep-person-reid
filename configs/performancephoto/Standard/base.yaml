@@ -31,7 +31,7 @@ train:
   seed: 4
   bag_size: None
   fixbase_epoch: 1
-  open_layers: [ 'classifier', 'bag_classifier', 'attention', 'fc']
+  open_layers: [ 'classifier']
 
 test:
   batch_size: 300
