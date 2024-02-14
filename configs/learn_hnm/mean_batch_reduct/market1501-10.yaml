@@ -2,8 +2,9 @@ model:
   name: 'osnet_x1_0'
   pretrained: True
   learn_mining_fn: True
-  learn_mining_inner_steps: 4
+  learn_mining_inner_steps: 10
   learn_mining_first_order_approx: True
+  learn_mining_batch_reduction: 'mean'
 
 data:
   type: 'image'
@@ -13,7 +14,7 @@ data:
   width: 128
   combineall: False
   transforms: ['random_flip']
-  save_dir: 'log/market1501_lhnm_4'
+  save_dir: 'log/market1501_lhnm_5'
 
 sampler:
   train_sampler: 'RandomIdentitySampler'
@@ -37,6 +38,7 @@ train:
   open_layers: ['classifier']
   lr_scheduler: 'cosine'
   bag_size: None
+  acc_lr: 0.0001
 
 test:
   batch_size: 300

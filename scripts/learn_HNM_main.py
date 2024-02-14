@@ -8,7 +8,7 @@ import torch.nn as nn
 
 
 import torchreid
-from torchreid.losses import TripletLoss
+from torchreid.losses import TripletLoss, NoReductionTripletLoss
 from torchreid.models import ConvexAccumulator
 from torchreid.utils import (
     Logger, check_isfile, set_random_seed, collect_env_info,
@@ -58,15 +58,18 @@ def build_engine(cfg, datamanager, model, optimizer, scheduler):
                 )
             elif cfg.model.learn_mining_fn:
                 print('-------------------------Using Learned Mining Engine-------------------------')
-                # for now can build the accumulation information statically
-                accumulator_fn = ConvexAccumulator(batch_size=cfg.train.batch_size)
+                assert cfg.sampler.train_sampler == 'RandomIdentitySampler', f'The learned mining engine only supports the RandomIdentitySampler, got {cfg.sampler.train_sampler} instead'
+                accumulator_fn = ConvexAccumulator(batch_size=cfg.train.batch_size,
+                                                   num_instances=cfg.sampler.num_instances,
+                                                   batch_reduction=cfg.model.learn_mining_batch_reduction)
                 accumulator_fn.to(torch.device('cuda'))
                 accumulator_optimizer = torch.optim.Adam(accumulator_fn.parameters(), lr=cfg.train.acc_lr)
                 inner_steps = cfg.model.learn_mining_inner_steps
                 first_order_approx = cfg.model.learn_mining_first_order_approx
                 inner_learning_rate = cfg.model.learn_mining_inner_learning_rate
 
-                per_sample_loss_fn = TripletLoss(reduction='none')
+                # this triple loss does not do "no reduction" the way I want it to.
+                per_sample_loss_fn = NoReductionTripletLoss()
                 # just use the mean for val risk function for now
                 val_risk_function = TripletLoss(reduction='mean')
 

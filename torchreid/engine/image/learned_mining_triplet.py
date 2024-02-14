@@ -138,8 +138,8 @@ class ImageTripletEngineLearnedMining(Engine):
 
         if not self.model.training:
             outputs, features = self.model(imgs)
-            loss = self.per_sample_loss_fn(outputs, pids)
-            loss = self.acc_fn(loss)
+            losses, loss_anchors = self.per_sample_loss_fn(outputs, pids)
+            loss = self.acc_fn(losses, loss_anchors)
 
             loss_summary['learned_loss'] = loss.item()
 
@@ -168,25 +168,15 @@ class ImageTripletEngineLearnedMining(Engine):
 
                 # and reuse the data to update the model
                 outputs, features = self.model(imgs)
-                loss = self.per_sample_loss_fn(outputs, pids)
-                # instead of sort, we need to apply everything to an even simpler accumulator
-                # the accumulator must operate only on a batch of data sorted by identity?
-                # should we say "oh for these triplets, originating from the same class, you should do  x"?
-                # no maybe not, that doesn't make sense for tripelts.
-                loss, _ = torch.sort(loss, descending=True)
-                loss = self.acc_fn(loss)
+                losses, loss_anchors = self.per_sample_loss_fn(outputs, pids)
+                loss = self.acc_fn(losses, loss_anchors)
                 loss_summary['learned_loss'] = loss.item()
                 loss.backward()
                 self.optimizer.step()
                 self.optimizer.zero_grad()
             else:
-                loss = self.per_sample_loss_fn(outputs, pids)
-
-                # reorder the loss by magnitude for the accumulator
-                loss, _ = torch.sort(loss, descending=True)
-
-                # accumulate the loss via our learnable accumulator
-                loss = self.acc_fn(loss)
+                losses, loss_anchors = self.per_sample_loss_fn(outputs, pids)
+                loss = self.acc_fn(losses, loss_anchors)
 
                 loss_summary['learned_loss'] = loss.item()
 

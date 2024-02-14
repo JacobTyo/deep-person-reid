@@ -1,7 +1,7 @@
 from __future__ import division, print_function, absolute_import
 
 from .cross_entropy_loss import CrossEntropyLoss
-from .hard_mine_triplet_loss import TripletLoss
+from .hard_mine_triplet_loss import TripletLoss, NoReductionTripletLoss
 from .bag_instance_difference_loss import BagInstanceDifferenceLoss
 
 

@@ -15,6 +15,7 @@ def get_default_config():
     cfg.model.learn_mining_inner_steps = 5 # how many inner steps to train the mining function
     cfg.model.learn_mining_first_order_approx = True # use first order gradient approximation for bi-level learning
     cfg.model.learn_mining_inner_learning_rate = 0.0005
+    cfg.model.learn_mining_batch_reduction = 'mean' # how to reduce the batch for the learned mining function
 
     # data
     cfg.data = CN()
