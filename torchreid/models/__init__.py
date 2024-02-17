@@ -24,7 +24,7 @@ from .resnet_ibn_b import *
 from .shufflenetv2 import *
 from .inceptionresnetv2 import *
 from .set_transformer import *
-from .convex_accumulator import ConvexAccumulator
+from .convex_accumulator import *
 
 __model_factory = {
     # image classification models

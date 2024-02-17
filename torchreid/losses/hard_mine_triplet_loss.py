@@ -86,7 +86,7 @@ class NoReductionTripletLoss(nn.Module):
                 for negative in range(n):
                     if targets[anchor] == targets[negative]:
                         continue  # Skip if the same class
-                    loss = torch.clamp(dist[anchor, positive] - dist[anchor, negative] + self.margin, min=0, max=None)
+                    loss = torch.clamp(dist[anchor, positive] - dist[anchor, negative] + self.margin, min=1e-12, max=None)
                     losses.append(loss)
                     anchor_labels.append(targets[anchor])
 
@@ -106,4 +106,4 @@ class NoReductionTripletLoss(nn.Module):
             losses = torch.zeros(1, device=inputs.device)
             anchor_labels = torch.zeros(0, device=inputs.device, dtype=torch.long)
 
-        return losses, anchor_labels
+        return losses

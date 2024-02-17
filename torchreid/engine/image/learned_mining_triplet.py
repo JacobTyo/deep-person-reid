@@ -90,7 +90,7 @@ class ImageTripletEngineLearnedMining(Engine):
     ):
         super(ImageTripletEngineLearnedMining, self).__init__(datamanager, use_gpu)
 
-        self.model = l2l.algorithms.MAML(model, lr=inner_learning_rate, first_order=first_order_approx)
+        self.model = l2l.algorithms.MAML(model, lr=inner_learning_rate, first_order=first_order_approx, allow_unused=True)
 
         self.optimizer = optimizer
         self.scheduler = scheduler
@@ -122,66 +122,87 @@ class ImageTripletEngineLearnedMining(Engine):
         assert self.per_sample_loss_fn is not None, 'A per sample loss function must be provided'
         assert self.val_risk_function is not None, 'A validation risk function must be provided'
 
-    def forward_backward(self, data):
+    def inner_step(self, imgs, pids):
+        # the purpose of the inner step is to update the learning to "look into the future" to help with updating the
+        # accumuator function.
 
-        # this needs to get a lot more complicated. Basically, it is going to do a 5 step look ahead.
-        # gotta be a little careful, because we only get one batch of data as input, so gotta maintain an
-        # internal counter to track if we are on an inner or an outer loop.
-
-        imgs, pids = self.parse_data_for_train(data)
+        outputs, features = self.learner(imgs)
 
         loss_summary = {}
+        losses = self.per_sample_loss_fn(features, pids)
+        loss = self.acc_fn(losses)
+
+        loss_summary['inner_loss'] = loss.item()
+
+        self.learner.adapt(loss)
+
+        return loss_summary
+
+    def outer_step(self, imgs, pids):
+        # the purpose of the outer step is to update the accumulator function
+        loss_summary = {}
+
+        outputs, features = self.learner(imgs)
+
+        self.inner_step_counter = -1
+        # we have finished the inner loop, so we need to do an outer step
+        loss = self.val_risk_function(features, pids)
+
+        loss_summary['outer_loss'] = loss.item()
+
+        loss.backward()
+
+        # track the magnitude of the acc_optim gradient
+        try:
+            loss_summary['acc_grad_mag'] = torch.norm(self.acc_fn.layer.weight.grad).item()
+        except:
+            print('error getting acc grad mag: This doesnt work with first order approximations')
+        self.acc_optim.step()
+        self.acc_optim.zero_grad()
+        self.optimizer.zero_grad()
+
+        return loss_summary
+
+    def update_underlying_model(self, imgs, pids):
+        # this step is to be used to update the underlying model, after the accumulator function has been updated
+        loss_summary = {}
+        outputs, features = self.model(imgs)
+        losses = self.per_sample_loss_fn(features, pids)
+        loss = self.acc_fn(losses)
+        loss.backward()
+        self.optimizer.step()
+        self.optimizer.zero_grad()
+        loss_summary['update_loss'] = loss.item()
+        # clear this gradient from the accumulator
+        self.acc_optim.zero_grad()
+
+        return loss_summary
+
+    def forward_backward(self, data):
+
+        imgs, pids = self.parse_data_for_train(data)
 
         if self.use_gpu:
             imgs = imgs.cuda()
             pids = pids.cuda()
 
-        if not self.model.training:
-            outputs, features = self.model(imgs)
-            losses, loss_anchors = self.per_sample_loss_fn(outputs, pids)
-            loss = self.acc_fn(losses, loss_anchors)
+        if self.inner_step_counter == -1:
+            loss_summary = self.update_underlying_model(imgs, pids)
+            self.inner_step_counter = 0
 
-            loss_summary['learned_loss'] = loss.item()
+        elif self.inner_step_counter == 0:
+            self.learner = self.model.clone()
+            self.acc_optim.zero_grad()
+            # and take an inner step
+            loss_summary = self.inner_step(imgs, pids)
+            self.inner_step_counter += 1
+
+        elif self.inner_step_counter >= self.inner_steps:
+            loss_summary = self.outer_step(imgs, pids)
+            self.inner_step_counter = -1
 
         else:
-            if self.inner_step_counter == 0:
-                self.learner = self.model.clone()
-                self.acc_optim.zero_grad()
-
-            outputs, features = self.learner(imgs)
-
-            loss_summary['acc'] = metrics.accuracy(outputs, pids)[0].item()
-
-            # outputs = F.log_softmax(outputs, dim=1)
-
-            if self.inner_step_counter >= self.inner_steps:
-                self.inner_step_counter = 0
-                # we have finished the inner loop, so we need to do an outer step
-                loss = self.val_risk_function(outputs, pids)
-
-                loss_summary['val_loss'] = loss.item()
-
-                loss.backward()
-                self.acc_optim.step()
-                self.acc_optim.zero_grad()
-                self.optimizer.zero_grad()
-
-                # and reuse the data to update the model
-                outputs, features = self.model(imgs)
-                losses, loss_anchors = self.per_sample_loss_fn(outputs, pids)
-                loss = self.acc_fn(losses, loss_anchors)
-                loss_summary['learned_loss'] = loss.item()
-                loss.backward()
-                self.optimizer.step()
-                self.optimizer.zero_grad()
-            else:
-                losses, loss_anchors = self.per_sample_loss_fn(outputs, pids)
-                loss = self.acc_fn(losses, loss_anchors)
-
-                loss_summary['learned_loss'] = loss.item()
-
-                self.learner.adapt(loss)
-
+            loss_summary = self.inner_step(imgs, pids)
             self.inner_step_counter += 1
 
         return loss_summary

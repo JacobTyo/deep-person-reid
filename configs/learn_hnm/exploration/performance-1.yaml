@@ -9,13 +9,19 @@ model:
 
 data:
   type: 'image'
-  sources: ['market1501']
-  targets: ['market1501']
+  sources: ['performancephoto']
+  targets: ['performancephoto']
   height: 256
   width: 128
   combineall: False
   transforms: ['random_flip']
-  save_dir: 'log/market1501_lhnm_basic_riskfn'
+  save_dir: 'log/perph_1'
+
+performancephoto:
+  real_mil: False
+
+cuhk03:
+  use_metric_cuhk03: True
 
 sampler:
   train_sampler: 'RandomIdentitySampler'
@@ -30,7 +36,7 @@ loss:
     margin: 1.0
 
 train:
-  project: 'learn_mining_market1501'
+  project: 'learn_mining_performance'
   optim: 'amsgrad'
   lr: 0.0005
   max_epoch: 50
@@ -39,7 +45,7 @@ train:
   open_layers: ['classifier']
   lr_scheduler: 'cosine'
   bag_size: None
-  acc_lr: 0.1
+  acc_lr: 0.01
 
 test:
   batch_size: 300
