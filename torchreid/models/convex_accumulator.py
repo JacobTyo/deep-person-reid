@@ -45,6 +45,9 @@ class ConvexAccumulator(nn.Module):
             self.normalize_weights()
             self.counter += 1
 
+        # sort the x's
+        x = x.sort(dim=-1, descending=True).values
+
         if self.normalization == 'softmax':
             x = nn.functional.softmax(self.layer.weight, dim=1) @ x
         else:
@@ -135,6 +138,8 @@ class ConvexAccumulator_TrueMining(nn.Module):
         if self.batch_reduction == 'mean':
             x = x.mean()
         elif self.batch_reduction == 'learned':
-            x = nn.functional.softmax(self.batch_reduction_layer.weight, dim=1) @ x.transpose(0, 1)
+            # need to sort x
+            x = x.sort(dim=-1, descending=True).values
+            x = nn.functional.softmax(self.batch_reduction_layer.weight, dim=1) @ x
 
         return x
