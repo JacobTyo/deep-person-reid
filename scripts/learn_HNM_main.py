@@ -59,12 +59,12 @@ def build_engine(cfg, datamanager, model, optimizer, scheduler):
             elif cfg.model.learn_mining_fn:
                 print('-------------------------Using Learned Mining Engine-------------------------')
                 assert cfg.sampler.train_sampler == 'RandomIdentitySampler', f'The learned mining engine only supports the RandomIdentitySampler, got {cfg.sampler.train_sampler} instead'
-                accumulator_fn = ConvexAccumulator(batch_size=cfg.train.batch_size,
-                                                   num_instances=cfg.sampler.num_instances,
-                                                   batch_reduction=cfg.model.learn_mining_batch_reduction)
-                # accumulator_fn = ConvexAccumulator_TrueMining(batch_size=cfg.train.batch_size,
+                # accumulator_fn = ConvexAccumulator(batch_size=cfg.train.batch_size,
                 #                                    num_instances=cfg.sampler.num_instances,
                 #                                    batch_reduction=cfg.model.learn_mining_batch_reduction)
+                accumulator_fn = ConvexAccumulator_TrueMining(batch_size=cfg.train.batch_size,
+                                                   num_instances=cfg.sampler.num_instances,
+                                                   batch_reduction=cfg.model.learn_mining_batch_reduction)
                 accumulator_fn.to(torch.device('cuda'))
                 accumulator_optimizer = torch.optim.Adam(accumulator_fn.parameters(), lr=cfg.train.acc_lr)
                 inner_steps = cfg.model.learn_mining_inner_steps
