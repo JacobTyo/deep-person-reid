@@ -15,7 +15,7 @@ data:
   width: 128
   combineall: False
   transforms: ['random_flip']
-  save_dir: 'log/perph_1'
+  save_dir: 'log/perph_1_faster'
 
 performancephoto:
   real_mil: False
@@ -45,7 +45,7 @@ train:
   open_layers: ['classifier']
   lr_scheduler: 'cosine'
   bag_size: None
-  acc_lr: 0.01
+  acc_lr: 0.05
 
 test:
   batch_size: 300
