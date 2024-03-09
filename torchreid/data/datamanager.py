@@ -180,7 +180,8 @@ class ImageDataManager(DataManager):
             query_set=None,
             gallery_set=None,
             duplicates=None,
-            real_mil=None
+            real_mil=None,
+            noise_level=0.0,
     ):
 
         super(ImageDataManager, self).__init__(
@@ -211,7 +212,8 @@ class ImageDataManager(DataManager):
                 query_set=query_set,
                 gallery_set=gallery_set,
                 duplicates=duplicates,
-                real_mil=real_mil
+                real_mil=real_mil,
+                noise_level=noise_level,
             )
             trainset.append(trainset_)
         trainset = sum(trainset)

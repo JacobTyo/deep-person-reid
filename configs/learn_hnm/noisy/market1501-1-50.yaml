@@ -15,10 +15,10 @@ data:
   width: 128
   combineall: False
   transforms: ['random_flip']
-  save_dir: 'log/market1501_1_noise_0.2'
+  save_dir: 'log/market1501_1_noise_0.5'
 
 market1501:
-  noise_level: 0.2
+  noise_level: 0.5
 
 sampler:
   train_sampler: 'RandomIdentitySampler'
@@ -33,7 +33,7 @@ loss:
     margin: 1.0
 
 train:
-  project: 'learn_mining_market1501_noise_20'
+  project: 'learn_mining_market1501_noise_50'
   optim: 'amsgrad'
   lr: 0.0005
   max_epoch: 50

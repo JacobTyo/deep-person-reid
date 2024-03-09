@@ -63,8 +63,8 @@ def build_engine(cfg, datamanager, model, optimizer, scheduler):
                 #                                    num_instances=cfg.sampler.num_instances,
                 #                                    batch_reduction=cfg.model.learn_mining_batch_reduction)
                 accumulator_fn = ConvexAccumulator_TrueMining(batch_size=cfg.train.batch_size,
-                                                   num_instances=cfg.sampler.num_instances,
-                                                   batch_reduction=cfg.model.learn_mining_batch_reduction)
+                                                              num_instances=cfg.sampler.num_instances,
+                                                              batch_reduction=cfg.model.learn_mining_batch_reduction)
                 accumulator_fn.to(torch.device('cuda'))
                 accumulator_optimizer = torch.optim.Adam(accumulator_fn.parameters(), lr=cfg.train.acc_lr)
                 inner_steps = cfg.model.learn_mining_inner_steps
@@ -72,8 +72,8 @@ def build_engine(cfg, datamanager, model, optimizer, scheduler):
                 inner_learning_rate = cfg.model.learn_mining_inner_learning_rate
 
                 # this triple loss does not do "no reduction" the way I want it to.
-                # per_sample_loss_fn = NoReductionTripletLoss()
-                per_sample_loss_fn = TripletLoss(reduction='none')
+                per_sample_loss_fn = NoReductionTripletLoss()
+                # per_sample_loss_fn = TripletLoss(reduction='none')
                 # just use the mean for val risk function for now
                 val_risk_function = TripletLoss(reduction='mean')
 

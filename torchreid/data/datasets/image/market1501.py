@@ -3,6 +3,7 @@ import re
 import glob
 import os.path as osp
 import warnings
+import random
 
 from ..dataset import ImageDataset
 
@@ -23,10 +24,11 @@ class Market1501(ImageDataset):
     dataset_dir = 'market1501'
     dataset_url = 'http://188.138.127.15:81/Datasets/Market-1501-v15.09.15.zip'
 
-    def __init__(self, root='', market1501_500k=False, **kwargs):
+    def __init__(self, root='', market1501_500k=False, noise_level=0.0, **kwargs):
         self.root = osp.abspath(osp.expanduser(root))
         self.dataset_dir = osp.join(self.root, self.dataset_dir)
         self.download_dataset(self.dataset_dir, self.dataset_url)
+        self.noise_level = noise_level
 
         # allow alternative directory structure
         self.data_dir = self.dataset_dir
@@ -53,7 +55,7 @@ class Market1501(ImageDataset):
             required_files.append(self.extra_gallery_dir)
         self.check_before_run(required_files)
 
-        train = self.process_dir(self.train_dir, relabel=True)
+        train = self.process_dir(self.train_dir, relabel=True, noise_level=self.noise_level)
         query = self.process_dir(self.query_dir, relabel=False)
         gallery = self.process_dir(self.gallery_dir, relabel=False)
         if self.market1501_500k:
@@ -61,7 +63,7 @@ class Market1501(ImageDataset):
 
         super(Market1501, self).__init__(train, query, gallery, **kwargs)
 
-    def process_dir(self, dir_path, relabel=False):
+    def process_dir(self, dir_path, relabel=False, noise_level=0.0):
         img_paths = glob.glob(osp.join(dir_path, '*.jpg'))
         pattern = re.compile(r'([-\d]+)_c(\d)')
 
@@ -81,6 +83,10 @@ class Market1501(ImageDataset):
             assert 0 <= pid <= 1501 # pid == 0 means background
             assert 1 <= camid <= 6
             camid -= 1 # index starts from 0
+            if noise_level > 0.0:
+                # if noise, then randomly relabel at given noise level
+                if random.random() < noise_level:
+                    pid = random.choice(list(pid_container))
             if relabel:
                 pid = pid2label[pid]
             data.append((img_path, pid, camid))

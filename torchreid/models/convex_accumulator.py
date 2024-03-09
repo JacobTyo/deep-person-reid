@@ -135,6 +135,7 @@ class ConvexAccumulator_TrueMining(nn.Module):
             x = x @ nn.functional.softmax(self.layer.weight, dim=1).transpose(0,1)
         else:
             x = self.layer(x)
+
         if self.batch_reduction == 'mean':
             x = x.mean()
         elif self.batch_reduction == 'learned':

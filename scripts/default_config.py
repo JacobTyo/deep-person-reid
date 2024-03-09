@@ -40,6 +40,7 @@ def get_default_config():
     # specific datasets
     cfg.market1501 = CN()
     cfg.market1501.use_500k_distractors = False # add 500k distractors to the gallery set for market1501
+    cfg.market1501.noise_level = 0.0 # add noise to the labels of market1501
     cfg.cuhk03 = CN()
     cfg.cuhk03.labeled_images = False # use labeled images, if False, use detected images
     cfg.cuhk03.classic_split = False # use classic split by Li et al. CVPR14
@@ -159,7 +160,8 @@ def imagedata_kwargs(cfg):
         'query_set': cfg.performancephoto.query_set,
         'gallery_set': cfg.performancephoto.gallery_set,
         'duplicates': cfg.data.mil_duplicates,
-        'real_mil': cfg.performancephoto.real_mil
+        'real_mil': cfg.performancephoto.real_mil,
+        'noise_level': cfg.market1501.noise_level,
     }
 
 
